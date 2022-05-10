@@ -1,0 +1,114 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: project-request
+  namespace: openshift-config
+  resourceVersion: "269123997"
+  uid: 3a19914c-1814-4b79-9c19-e44567905ca2
+objects:
+- apiVersion: project.openshift.io/v1
+  kind: Project
+  metadata:
+    annotations:
+      openshift.io/description: ${PROJECT_DESCRIPTION}
+      openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+      openshift.io/requester: ${PROJECT_REQUESTING_USER}
+    name: ${PROJECT_NAME}
+  spec: {}
+  status: {}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: admin
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: admin
+  subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: ${PROJECT_ADMIN_USER}
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: project-resources
+    namespace: ${PROJECT_NAME}
+  spec:
+    hard:
+      persistentvolumeclaims: 5
+      requests.cpu: 1
+      requests.ephemeral-storage: 4Gi
+      requests.memory: 2Gi
+      requests.storage: 40Gi
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    name: resource-limits
+    namespace: ${PROJECT_NAME}
+  spec:
+    limits:
+    - max:
+        cpu: 2
+        memory: 4Gi
+      min:
+        cpu: 10m
+        memory: 16Mi
+      type: Pod
+    - default:
+        cpu: 100m
+        memory: 256Mi
+      defaultRequest:
+        cpu: 100m
+        memory: 256Mi
+      max:
+        cpu: 2
+        memory: 4Gi
+      min:
+        cpu: 10m
+        memory: 16Mi
+      type: Container
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: allow-from-same-namespace
+    namespace: ${PROJECT_NAME}
+  spec:
+    ingress:
+    - from:
+      - podSelector: {}
+    podSelector: {}
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: allow-from-openshift-ingress
+    namespace: ${PROJECT_NAME}
+  spec:
+    ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            policy-group.network.openshift.io/ingress: ""
+    podSelector: {}
+    policyTypes:
+    - Ingress
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: allow-from-openshift-monitoring
+    namespace: ${PROJECT_NAME}
+  spec:
+    ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            network.openshift.io/policy-group: monitoring
+    podSelector: {}
+    policyTypes:
+    - Ingress
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_DISPLAYNAME
+- name: PROJECT_DESCRIPTION
+- name: PROJECT_ADMIN_USER
+- name: PROJECT_REQUESTING_USER
