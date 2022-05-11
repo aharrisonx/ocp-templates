@@ -1,0 +1,12 @@
+#!/bin/bash
+ARGS="${@}"
+clear;
+while(true); do
+  OUTPUT=`$ARGS`
+  for i in {1..25}; do
+    printf '\e[1A\e[K'
+  done
+
+  echo -e "${OUTPUT[@]}"
+  sleep 1
+done
