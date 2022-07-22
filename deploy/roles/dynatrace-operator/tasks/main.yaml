@@ -1,8 +1,0 @@
----
-- name: Create dynatrace namespace
-  k8s:
-    definition: "{{ lookup('file', 'dynatrace-namespace.yaml') }}"
-
-- name: Create dynatrace operator
-  k8s:
-    definition: "{{ lookup('file', 'dynatrace-operator.yaml') }}"

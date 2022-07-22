@@ -1,8 +1,0 @@
-- name: Create secret for api certs
-  k8s:
-    definition: "{{ lookup('template', 'api-certs-secret.yaml.j2') }}"
- 
-- name: Update api certs
-  k8s:
-    definition: "{{ lookup('file', 'cluster-apiserver.yaml') }}"
-
