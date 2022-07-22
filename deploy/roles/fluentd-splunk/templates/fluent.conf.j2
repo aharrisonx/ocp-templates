@@ -1,0 +1,45 @@
+<system>
+  log_level info
+</system>
+
+<source>
+  @type  forward
+  port  24224
+
+  <transport tls>
+    cert_path /etc/fluent/fluent.crt
+    private_key_path /etc/fluent/fluent.key
+  </transport>
+
+  <security>
+    shared_key {{ fluentd_shared_key | default() }}
+    self_hostname fluentd
+  </security>
+</source>
+
+<match **>
+  @type splunk_hec
+  hec_host {{ splunk_url }}
+  hec_port {{ splunk_port }}
+  hec_token {{ hec_token }}
+{% if insecure_ssl is defined and insecure_ssl is sameas true %}
+  insecure_ssl true
+{% else %}
+  ca_file /etc/fluent/splunk-ca.crt
+{% endif %}
+  <buffer>
+    @type file
+    chunk_limit_records 100000
+    chunk_limit_size 200m
+    flush_interval 5s
+    flush_mode interval
+    flush_thread_count 2
+    overflow_action block
+    path /var/log/fluentd/fluentd-buffers/buffer
+    retry_forever
+    retry_max_interval 30
+    retry_type exponential_backoff
+    total_limit_size 600m
+  </buffer>
+</match>
+

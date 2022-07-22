@@ -1,0 +1,66 @@
+postgresql:
+  image: registry.access.redhat.com/rhscl/postgresql-96-rhel7
+  imageTag: latest
+  extraEnv:
+  - name: POSTGRESQL_USER
+    value: anchoreengine
+  - name: POSTGRESQL_PASSWORD
+    value: anchore-postgres,123
+  - name: POSTGRESQL_DATABASE
+    value: anchore
+  - name: PGUSER
+    value: postgres
+  - name: LD_LIBRARY_PATH
+    value: /opt/rh/rh-postgresql96/root/usr/lib64
+  - name: PATH
+    value: /opt/rh/rh-postgresql96/root/usr/bin:/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  persistence:
+    size: 20Gi
+    storageClass: thin-retain
+anchoreGlobal:
+  openShiftDeployment: True
+  securityContext:
+    runAsUser:
+    runAsGroup:
+    fsGroup:
+  defaultAdminPassword: JJZNHi6W83ivvlMOtah1rUWYOg2GSYMN
+anchoreEnterpriseGlobal:
+  enabled: True
+
+anchore-feeds-db:
+  image: registry.access.redhat.com/rhscl/postgresql-96-rhel7
+  imageTag: latest
+  extraEnv:
+  - name: POSTGRESQL_USER
+    value: anchoreengine
+  - name: POSTGRESQL_PASSWORD
+    value: anchore-postgres,123
+  - name: POSTGRESQL_DATABASE
+    value: anchore-feeds
+  - name: PGUSER
+    value: postgres
+  - name: LD_LIBRARY_PATH
+    value: /opt/rh/rh-postgresql96/root/usr/lib64
+  - name: PATH
+    value: /opt/rh/rh-postgresql96/root/usr/bin:/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  persistence:
+    size: 30Gi
+
+anchore-ui-redis:
+  password: anchore-postgres,123
+
+anchoreEnterpriseFeeds:
+  persistence: 
+    storageClass: thin-retain
+
+anchore-feeds-db:
+  persistence:
+    storageClass: thin-retain
+
+redis:
+  persistence:
+    storageClass: thin-retain
+
+anchoreCatalog:
+  reportAnchoreCluster:
+    enabled: false

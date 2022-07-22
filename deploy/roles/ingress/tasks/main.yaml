@@ -1,0 +1,8 @@
+- name: Create secret for ingress certs
+  k8s:
+    definition: "{{ lookup('template', 'ingress-certs-secret.yaml.j2') }}"
+ 
+- name: Update ingress controller with ingress certs
+  k8s:
+    definition: "{{ lookup('file', 'ingresscontroller-default.yaml') }}"
+

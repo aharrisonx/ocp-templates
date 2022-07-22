@@ -1,0 +1,54 @@
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  name: namespace-labeler
+  namespace: namespace-labeler
+spec:
+  schedule: '0 1 * * *'
+  concurrencyPolicy: Forbid
+  suspend: false
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          restartPolicy: Never
+          serviceAccountName: cron-ns-labeler
+          schedulerName: default-scheduler
+          terminationGracePeriodSeconds: 30
+          securityContext: {}
+          containers:
+            - name: oc-cli
+              image: registry.redhat.io/openshift4/ose-cli
+              command:
+                - /bin/bash
+                - /etc/jobs/job.sh
+              resources: {}
+              volumeMounts:
+                - name: job-sh
+                  mountPath: /etc/jobs
+                - name: ns-labels
+                  mountPath: /etc/ns-files/
+                  readOnly: true
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
+          serviceAccount: cron-ns-labeler
+          volumes:
+            - name: job-sh
+              configMap:
+                name: job-sh
+                defaultMode: 420
+            - name: ns-labels
+              projected:
+                sources:
+                - configMap:
+                    name: infra-ns
+                - configMap:
+                    name: digital-ns
+          dnsPolicy: ClusterFirst
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1

@@ -1,0 +1,10 @@
+---
+- name: Add namespace for {{ ns.name }}
+  k8s:
+    definition: "{{ lookup('template', '{{ item }}') }}"
+  loop:
+  - namespace.yaml.j2
+  - rolebinding.yaml.j2
+  - resourcequota.yaml.j2
+  - limitrange.yaml.j2
+

@@ -1,0 +1,19 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: namespace-labeler
+  namespace: namespace-labeler
+  labels:
+    release: prometheus-operator
+spec:
+  endpoints:
+    - interval: 8h
+      path: /unlabeled.json
+      port: 8080-tcp
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app: httpd-unlabeled-ns
+

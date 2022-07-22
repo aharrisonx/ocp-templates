@@ -1,0 +1,6 @@
+---
+- include_tasks: add-namespace.yaml
+  loop: "{{ app_namespaces }}"
+  loop_control:
+    loop_var: ns
+

@@ -1,0 +1,15 @@
+---
+- name: Find OpenShift infrastructure ID
+  k8s_info:
+    api_version: config.openshift.io/v1
+    kind: Infrastructure
+    name: cluster
+  register: infrastructure_cluster
+
+- set_fact:
+    infrastructure_id: "{{ infrastructure_cluster.resources[0].status.infrastructureName }}"
+
+- name: Add machineset for infrastructure nodes
+  k8s:
+    definition: "{{ lookup('template', 'infra-machineset.yaml.j2') }}"
+

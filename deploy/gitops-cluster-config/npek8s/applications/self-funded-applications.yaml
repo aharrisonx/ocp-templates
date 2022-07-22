@@ -1,0 +1,15 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: self-funded-applications
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: gitops-cluster-config/npek8s/applications/self-funded
+    repoURL: https://bitbucket.blueshieldca.com/scm/caa/openshift_playbooks.git
+    targetRevision: master

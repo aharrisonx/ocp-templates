@@ -1,0 +1,50 @@
+---
+app_namespaces:
+- name: prod
+  admin_users:
+  - user1
+  - user2
+  admin_groups:
+  - ocp_admins
+  resourcequota:
+    requests:
+      cpu: 4
+      memory: 16Gi
+      ephemeral: 25Gi
+      storage: 100Gi
+    limits:
+      cpu: 8
+      memory: 32Gi
+      ephemeral: 50Gi
+  limitrange:
+    max:
+      cpu: 3 
+      memory: 8Gi 
+    min:
+      cpu: 100m 
+      memory: 4Mi 
+    default:
+      cpu: 600m 
+      memory: 512Mi 
+    defaultRequest:
+      cpu: 150m 
+      memory: 256Mi 
+- name: testapp2
+  admin_users:
+  - user3
+  admin_groups:
+  - it_admins
+  resourcequota:
+    requests:
+      cpu: 2
+      memory: 8Gi
+      ephemeral: 10Gi
+      storage: 50Gi
+  limitrange:
+    max:
+      cpu: 2 
+      memory: 8Gi 
+    min:
+      cpu: 100m 
+      memory: 4Mi 
+

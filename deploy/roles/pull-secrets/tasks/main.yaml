@@ -1,0 +1,5 @@
+---
+- name: Update pull-secret
+  k8s:
+    definition: "{{ lookup('file', 'pull-secret-secret.yaml') }}"
+ 

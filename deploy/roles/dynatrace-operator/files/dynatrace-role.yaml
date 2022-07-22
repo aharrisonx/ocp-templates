@@ -1,0 +1,12 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: gitops-dynatrace-role
+  namespace: dynatrace
+rules:
+  - verbs:
+      - '*'
+    apiGroups:
+      - dynatrace.com
+    resources:
+      - dynakubes

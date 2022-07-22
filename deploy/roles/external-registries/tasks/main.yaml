@@ -1,0 +1,5 @@
+---
+- name: Configure External Registries
+  k8s:
+    definition: "{{ lookup('file', 'regsec.yaml') }}"
+ 

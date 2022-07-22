@@ -1,0 +1,26 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: bsc-ca
+  namespace: openshift-config
+  files:
+  - ca.crt
+  - ca-bundle.crt
+- name: openshift-user-ca
+  namespace: openshift-controller-manager
+  files:
+  - ca.crt
+  - ca-bundle.crt
+- name: v4-0-config-user-idp-0-ca
+  namespace: openshift-authentication
+  files:
+  - ca.crt
+  - ca-bundle.crt
+resources:
+- cluster-proxy.yaml
+

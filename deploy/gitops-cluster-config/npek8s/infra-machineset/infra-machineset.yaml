@@ -1,0 +1,58 @@
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: >
+      {"apiVersion":"machine.openshift.io/v1beta1","kind":"MachineSet","metadata":{"annotations":{"machine.openshift.io/memoryMb":"32768","machine.openshift.io/vCPU":"8"},"creationTimestamp":"2021-03-10T19:55:10Z","generation":4,"labels":{"machine.openshift.io/cluster-api-cluster":"npek8s-hxbxk"},"name":"npek8s-hxbxk-infra","namespace":"openshift-machine-api","resourceVersion":"293262556","uid":"3150851b-0c3c-4911-ba26-c8910d35ceb7"},"spec":{"replicas":3,"selector":{"matchLabels":{"machine.openshift.io/cluster-api-cluster":"npek8s-hxbxk","machine.openshift.io/cluster-api-machineset":"npek8s-hxbxk-infra"}},"template":{"metadata":{"labels":{"machine.openshift.io/cluster-api-cluster":"npek8s-hxbxk","machine.openshift.io/cluster-api-machine-role":"infra","machine.openshift.io/cluster-api-machine-type":"infra","machine.openshift.io/cluster-api-machineset":"npek8s-hxbxk-infra"}},"spec":{"metadata":{"labels":{"node-role.kubernetes.io/infra":""}},"providerSpec":{"value":{"apiVersion":"vsphereprovider.openshift.io/v1beta1","credentialsSecret":{"name":"vsphere-cloud-credentials"},"diskGiB":120,"kind":"VSphereMachineProviderSpec","memoryMiB":32768,"metadata":{"creationTimestamp":null},"network":{"devices":[{"networkName":"GUEST_VLAN567"}]},"numCPUs":8,"numCoresPerSocket":2,"snapshot":"","template":"npek8s-hxbxk-rhcos","userDataSecret":{"name":"worker-user-data"},"workspace":{"datacenter":"BSC_SAC","datastore":"SAC-NIM-CORE2-12","folder":"/BSC_SAC/vm/npek8s-hxbxk","resourcePool":"/BSC_SAC/host/SAC_CORE_02/Resources","server":"winf236p.bsc.bscal.com"}}},"taints":[{"effect":"NoSchedule","key":"node-role.kubernetes.io/infra","value":"Exists"}]}}},"status":{"availableReplicas":3,"fullyLabeledReplicas":3,"observedGeneration":4,"readyReplicas":3,"replicas":3}}
+    machine.openshift.io/memoryMb: '32768'
+    machine.openshift.io/vCPU: '8'
+  name: npek8s-hxbxk-infra
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: npek8s-hxbxk
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: npek8s-hxbxk
+      machine.openshift.io/cluster-api-machineset: npek8s-hxbxk-infra
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: npek8s-hxbxk
+        machine.openshift.io/cluster-api-machine-role: infra
+        machine.openshift.io/cluster-api-machine-type: infra
+        machine.openshift.io/cluster-api-machineset: npek8s-hxbxk-infra
+    spec:
+      metadata:
+        labels:
+          node-role.kubernetes.io/infra: ''
+      providerSpec:
+        value:
+          numCoresPerSocket: 2
+          diskGiB: 120
+          snapshot: ''
+          userDataSecret:
+            name: worker-user-data
+          memoryMiB: 32768
+          credentialsSecret:
+            name: vsphere-cloud-credentials
+          network:
+            devices:
+              - networkName: GUEST_VLAN567
+          metadata:
+            creationTimestamp: null
+          numCPUs: 8
+          kind: VSphereMachineProviderSpec
+          workspace:
+            datacenter: BSC_SAC
+            datastore: SAC-NIM-CORE2-12
+            folder: /BSC_SAC/vm/npek8s-hxbxk
+            resourcePool: /BSC_SAC/host/SAC_CORE_02/Resources
+            server: winf236p.bsc.bscal.com
+          template: npek8s-hxbxk-rhcos
+          apiVersion: vsphereprovider.openshift.io/v1beta1
+      taints:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          value: Exists

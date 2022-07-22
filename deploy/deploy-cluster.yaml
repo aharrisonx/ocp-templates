@@ -1,0 +1,10 @@
+---
+- name: Install OpenShift {{ openshift_version }}
+  hosts: 127.0.0.1
+  gather_facts: false
+  connection: local
+  vars_files:
+  - clusters/{{ cluster_name }}.yaml
+  roles:
+  - deploy-cluster
+

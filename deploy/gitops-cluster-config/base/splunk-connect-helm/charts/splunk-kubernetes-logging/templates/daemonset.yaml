@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ template "splunk-kubernetes-logging.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-logging.name" . }}
+    chart: {{ template "splunk-kubernetes-logging.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    engine: fluentd
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "splunk-kubernetes-logging.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "splunk-kubernetes-logging.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+        {{- if .Values.global.prometheus_enabled }}
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '24231'
+        {{- end }}
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ template "splunk-kubernetes-logging.serviceAccountName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- if .Values.image.usePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecretName }}
+      {{- end }}
+      containers:
+      - name: splunk-fluentd-k8s-logs
+        image: {{ template "splunk-kubernetes-logging.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          runAsUser: 0
+          privileged: {{ .Values.kubernetes.securityContext }}
+        env:
+          - name: K8S_NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: MY_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: SPLUNK_HEC_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "splunk-kubernetes-logging.secret" . }}
+                key: splunk_hec_token
+          {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+          - name: SSL_CERT_FILE
+            value: /fluentd/etc/splunk/hec_ca_file
+          {{- end }}
+          {{- if .Values.environmentVar }}
+          {{- toYaml .Values.environmentVar | nindent 10 }}
+          {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - name: varlog
+          mountPath: {{ .Values.containers.path }}
+        - name: varlogdest
+          mountPath: {{ .Values.containers.pathDest }}
+          readOnly: true
+        - name: journallogpath
+          mountPath: {{ .Values.journalLogPath | quote }}
+          readOnly: true
+        {{- if .Values.extraVolumeMounts }}
+{{ toYaml .Values.extraVolumeMounts | indent 8 }}
+        {{- end }}
+        - name: conf-configmap
+          mountPath: /fluentd/etc
+        - name: secrets
+          mountPath: /fluentd/etc/splunk
+          readOnly: true
+        ports:
+        {{- if .Values.global.prometheus_enabled }}
+        - containerPort: 24231
+          name: metrics
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.global.monitoring_agent_enabled }}
+        - containerPort: 24220
+          name: monitor-agent
+          protocol: TCP
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /api/plugins.json
+            port: 24220
+          initialDelaySeconds: 60
+          periodSeconds: 60
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: varlog
+        hostPath:
+          path: {{ .Values.containers.path }}
+      - name: varlogdest
+        hostPath:
+          path: {{ .Values.containers.pathDest }}
+      - name: journallogpath
+        hostPath:
+          path: {{ .Values.journalLogPath | quote }}
+      {{- if .Values.extraVolumes }}
+{{ toYaml .Values.extraVolumes | indent 6 }}
+      {{- end }}
+      - name: conf-configmap
+        configMap:
+          name: {{ template "splunk-kubernetes-logging.fullname" . }}
+      - name: secrets
+        secret:
+          secretName: {{ template "splunk-kubernetes-logging.secret" . }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}

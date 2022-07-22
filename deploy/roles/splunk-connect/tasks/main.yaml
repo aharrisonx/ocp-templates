@@ -1,0 +1,13 @@
+---
+- name: Add SCC privileged to splunk-connect
+  community.kubernetes.k8s:
+    definition: "{{ lookup('file', 'splunk-connect-scc-privileged-clusterrolebinding.yaml') }}"
+
+- name: Deploy splunk connect
+  community.kubernetes.helm:
+    name: splunk-connect
+    chart_ref: https://github.com/splunk/splunk-connect-for-kubernetes/releases/download/1.4.6/splunk-connect-for-kubernetes-1.4.6.tgz
+    values: "{{ lookup('template', 'values.yaml.j2') | from_yaml }}"
+    release_namespace: splunk-connect 
+    create_namespace: true 
+

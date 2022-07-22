@@ -1,0 +1,19 @@
+apiVersion: config.openshift.io/v1
+kind: Image
+metadata:
+  name: cluster
+spec:
+  registrySources:
+    allowedRegistries:
+      - bsc-docker-all.artifactory.bsc.bscal.com        
+      - bsc-docker-ci.artifactory.bsc.bscal.com 
+      - docker.io/bitnami
+      - docker.io/appdynamics/cluster-agent-operator
+      - 'image-registry.openshift-image-registry.svc:5000'
+      - 'kzt52610.live.dynatrace.com/linux/activegate:latest'
+      - 'kzt52610.live.dynatrace.com/linux/oneagent:latest'      
+      - quay.io/openshift-release-dev   
+      - registry.access.redhat.com      
+      - registry.connect.redhat.com     
+      - registry.redhat.io
+      - k8s.gcr.io/metrics-server

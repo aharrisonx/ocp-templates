@@ -1,0 +1,206 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  finalizers:
+    - argoproj.io/finalizer
+  name: argocd
+  namespace: cicd
+spec:
+  server:
+    autoscale:
+      enabled: false
+    grpc:
+      ingress:
+        enabled: false
+    ingress:
+      enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 125m
+        memory: 128Mi
+    route:
+      enabled: true
+    service:
+      type: ''
+  grafana:
+    enabled: false
+    ingress:
+      enabled: false
+    route:
+      enabled: false
+  prometheus:
+    enabled: false
+    ingress:
+      enabled: false
+    route:
+      enabled: false
+  initialSSHKnownHosts: {}
+  rbac:
+    defaultPolicy: 'role:readonly'
+    policy: |
+      g, cluster_admin, role:admin
+      g, scrm_project_admins, role:admin
+      g, scrm_engineers, role:admin
+      g, rbac-openshift-admin, role:admin
+      g, rbac-openshift-appdev-digital-nsadmin, role:admin
+    scopes: '[groups]'
+  repo:
+    resources:
+      limits:
+        cpu: '1'
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+  dex:
+    groups:
+      - cluster_admin
+      - scrm_project_admins
+      - scrm_engineers
+      - rbac-openshift-admin
+      - rbac-openshift-appdev
+      - rbac-openshift-appdev-digital
+      - rbac-openshift-appdev-digital-nsadmin
+      - rbac-openshift-testing
+      - rbac-openshift-testing-perf
+      - rbac-openshift-testing-qa
+    openShiftOAuth: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  ha:
+    enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  tls:
+    ca: {}
+    initialCerts:
+      bitbucket.blueshieldca.com: |-
+        -----BEGIN CERTIFICATE-----
+        MIIHxjCCBa6gAwIBAgITOABEQRt4dgbmtsn95AAEAERBGzANBgkqhkiG9w0BAQsF
+        ADBXMRMwEQYKCZImiZPyLGQBGRYDY29tMRUwEwYKCZImiZPyLGQBGRYFYnNjYWwx
+        EzARBgoJkiaJk/IsZAEZFgNic2MxFDASBgNVBAMTC0JTQ0lTU1VFQ0EyMB4XDTIy
+        MDIxNTE3MTY1MVoXDTI0MDIxNTE3MTY1MVowgZIxCzAJBgNVBAYTAlVTMRMwEQYD
+        VQQIEwpDYWxpZm9ybmlhMRgwFgYDVQQHEw9FbCBEb3JhZG8gSGlsbHMxIjAgBgNV
+        BAoTGUJsdWUgU2hpZWxkIG9mIENhbGlmb3JuaWExCzAJBgNVBAsTAklUMSMwIQYD
+        VQQDExpiaXRidWNrZXQuYmx1ZXNoaWVsZGNhLmNvbTCCASIwDQYJKoZIhvcNAQEB
+        BQADggEPADCCAQoCggEBAN9qIJgkmc/2mfaIYf2hGOcWAavBqXdbHJWELcjO1WPG
+        aDnOnVvtMXNw/yqLiDjfHCPLPtg6W7ecvnU7xzU9yiXbO9kOn31IMUQ/0CsVOB4l
+        UShaaM2in04F63ZJRLnzPz5KlHGxkoBf4K/UpakO4rNWkFpARpNP2AmFzgb8J8jI
+        IzCISJfjKoe4WGVpGx9n6PYhRTUGEuVoDl4NEf8+jqxZXdtPxcWmenZIvRq54th8
+        s+NqKT3L5rKea9/fvSzw2yCQbbRPIeK0c2/ZnLcw0wLbpJFb3+xCFj/ui93O31tO
+        R09g9zyD8N2rq/CvVZZo4IBCWdJ+38QbJNNVY9HeeEMCAwEAAaOCA00wggNJMB0G
+        A1UdDgQWBBRkDJpkEh84WMUKezz4IUlTY4nE/jAfBgNVHSMEGDAWgBSj0cES30rf
+        GkZJ3fzAO5yeOzvKyDCCAQUGA1UdHwSB/TCB+jCB96CB9KCB8YaBuGxkYXA6Ly8v
+        Q049QlNDSVNTVUVDQTIsQ049d2luZjQwOHAsQ049Q0RQLENOPVB1YmxpYyUyMEtl
+        eSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9YnNj
+        LERDPWJzY2FsLERDPWNvbT9jZXJ0aWZpY2F0ZVJldm9jYXRpb25MaXN0P2Jhc2U/
+        b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0aW9uUG9pbnSGNGh0dHA6Ly9wa2kyLmJz
+        Yy5ic2NhbC5jb20vcmVwb3NpdG9yeS9CU0NJU1NVRUNBMi5jcmwwggEyBggrBgEF
+        BQcBAQSCASQwggEgMIGvBggrBgEFBQcwAoaBomxkYXA6Ly8vQ049QlNDSVNTVUVD
+        QTIsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZpY2Vz
+        LENOPUNvbmZpZ3VyYXRpb24sREM9YnNjLERDPWJzY2FsLERDPWNvbT9jQUNlcnRp
+        ZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1dGhvcml0eTAq
+        BggrBgEFBQcwAYYeaHR0cDovL3BraTIuYnNjLmJzY2FsLmNvbS9vY3NwMEAGCCsG
+        AQUFBzAChjRodHRwOi8vcGtpMi5ic2MuYnNjYWwuY29tL3JlcG9zaXRvcnkvQlND
+        SVNTVUVDQTIuY3J0MAwGA1UdEwEB/wQCMAAwDgYDVR0PAQH/BAQDAgWgMDsGCSsG
+        AQQBgjcVBwQuMCwGJCsGAQQBgjcVCIbZzySF4I0Agf2dGYbk4EuEzJYrA/ufJb+4
+        MwIBZAIBDTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwJwYJKwYBBAGC
+        NxUKBBowGDAKBggrBgEFBQcDATAKBggrBgEFBQcDAjAlBgNVHREEHjAcghpiaXRi
+        dWNrZXQuYmx1ZXNoaWVsZGNhLmNvbTANBgkqhkiG9w0BAQsFAAOCAgEAYC+gICZt
+        ZvUyAg1sP97fo0+TNYda1YyrSjuInf7vU/mpgwmfEQpaBikIpwUhyqwWF5qMZ77Z
+        GeEamlpCesLOBTnSghZ88wl52lUx/+ch5wVjqjniMhQzA7TDGwP7HJGsOKux1Dyf
+        PS2GShgWiGF7P6OowyyMwQJ+D4dC/8JW8GUt3fH18hSbs86JtUl7rO6HJz8cdmvu
+        YTacsFLfbH2diXv8C6fmSIxBwAvTTxigwqeaR1fNoMMo/e0yREXLzqjhurCIrk+K
+        CFHamvd6TgMX/hPuBD5FcE88Rx1cmwRM5VVROwyJt3jGe+54MAJzpY8eQRwNuqEj
+        nDcTFLYmchd5N9LmswxOIbMVqP+9bVPNkiRbbNMYw4YDFKcNMRYkCRZX5WDb6l+2
+        uPEsosSufO71B0MD8Hhl4pVqgmaE5n5oeey3mbSUsvzxNkjoBuHPd7hv2Xc2RTFb
+        1hcWHZpwJyg1+uN1gv2+31BR5R7mjixZnYM/F44NCsAYup6Apo0SxoqdDsIyZxF1
+        bcQytTicCTh7h7uhzVQZf2fBoEsZO5IjtUuPNJBhbJP36TOEhgiQUjzMLVenfVSm
+        3vDVka1TjjN/M6xs3DF6Ocq1YjKdyfNFB12Kr8+LtrElzpijZaudni2TBF+UIQch
+        ue/2C+aD3sfvJox+Wv8LOaF/Q7ALjL7bVMk=
+        -----END CERTIFICATE-----
+      seacliff-jenkins.bsc.bscal.com: |-
+        -----BEGIN CERTIFICATE-----
+        MIIH0DCCBbigAwIBAgITOAAHU6NCBinzAa2GjAAEAAdTozANBgkqhkiG9w0BAQsF
+        ADBXMRMwEQYKCZImiZPyLGQBGRYDY29tMRUwEwYKCZImiZPyLGQBGRYFYnNjYWwx
+        EzARBgoJkiaJk/IsZAEZFgNic2MxFDASBgNVBAMTC0JTQ0lTU1VFQ0EyMB4XDTIw
+        MDczMTAyMjQxM1oXDTIyMDczMTAyMjQxM1owgZgxCzAJBgNVBAYTAlVTMRMwEQYD
+        VQQIEwpDYWxpZm9ybmlhMRgwFgYDVQQHEw9FbCBEb3JhZG8gSGlsbHMxIjAgBgNV
+        BAoTGUJsdWUgU2hpZWxkIG9mIENhbGlmb3JuaWExDTALBgNVBAsTBFNDUk0xJzAl
+        BgNVBAMTHnNlYWNsaWZmLWplbmtpbnMuYnNjLmJzY2FsLmNvbTCCASIwDQYJKoZI
+        hvcNAQEBBQADggEPADCCAQoCggEBAKvdUq5eP8yjFfRCmHwU+QwYX8Is6/5TXsSm
+        nv6OxtrhyhxfTl01v985fWYbiWGUCk6zCKYItPZ12HEedLTcdtUeD/UtO2MoH/j3
+        MRB5Ld1COfgxmicgciXERXJtRJsO2QveE58/dAYiVGMO0tCzoHUxb/sRgv0EP+dS
+        DvpVcJIgdObVSj30/3c32ejHwpN6RJBrVCLBSXrtQBtUK69X9jkDdh+1tlrlW/RD
+        f7OdrRl3MOkHNBvk85r5NbIgipek9p1+OHkNgL+dQCus+LWOBtZhymJjeXEbPEHD
+        WIxG4vFnM8oNUJSYvcxY3mYidaPwZ73u2VulGDuJQxf40HK2AAsCAwEAAaOCA1Ew
+        ggNNMB0GA1UdDgQWBBT0EOklm+DSZt2+PtDo9TyZ6VgOEzAfBgNVHSMEGDAWgBSj
+        0cES30rfGkZJ3fzAO5yeOzvKyDCCAQUGA1UdHwSB/TCB+jCB96CB9KCB8YaBuGxk
+        YXA6Ly8vQ049QlNDSVNTVUVDQTIsQ049d2luZjQwOHAsQ049Q0RQLENOPVB1Ymxp
+        YyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24s
+        REM9YnNjLERDPWJzY2FsLERDPWNvbT9jZXJ0aWZpY2F0ZVJldm9jYXRpb25MaXN0
+        P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0aW9uUG9pbnSGNGh0dHA6Ly9w
+        a2kyLmJzYy5ic2NhbC5jb20vcmVwb3NpdG9yeS9CU0NJU1NVRUNBMi5jcmwwggEy
+        BggrBgEFBQcBAQSCASQwggEgMIGvBggrBgEFBQcwAoaBomxkYXA6Ly8vQ049QlND
+        SVNTVUVDQTIsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENOPVNl
+        cnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9YnNjLERDPWJzY2FsLERDPWNvbT9j
+        QUNlcnRpZmljYXRlP2Jhc2U/b2JqZWN0Q2xhc3M9Y2VydGlmaWNhdGlvbkF1dGhv
+        cml0eTAqBggrBgEFBQcwAYYeaHR0cDovL3BraTIuYnNjLmJzY2FsLmNvbS9vY3Nw
+        MEAGCCsGAQUFBzAChjRodHRwOi8vcGtpMi5ic2MuYnNjYWwuY29tL3JlcG9zaXRv
+        cnkvQlNDSVNTVUVDQTIuY3J0MAwGA1UdEwEB/wQCMAAwDgYDVR0PAQH/BAQDAgWg
+        MDsGCSsGAQQBgjcVBwQuMCwGJCsGAQQBgjcVCIbZzySF4I0Agf2dGYbk4EuEzJYr
+        A/ufJb+4MwIBZAIBDTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwJwYJ
+        KwYBBAGCNxUKBBowGDAKBggrBgEFBQcDATAKBggrBgEFBQcDAjApBgNVHREEIjAg
+        gh5zZWFjbGlmZi1qZW5raW5zLmJzYy5ic2NhbC5jb20wDQYJKoZIhvcNAQELBQAD
+        ggIBAHSQegPiOrXfwSFAG2yhZAGAOmX769Vfo896Kn9xx7XngmXaeA2RT95hRe3F
+        zklaH06j5AjR17Zt9RoddE9/3rmZA8mIWiQ5mbfIRCMUKwoPnaF6TrVruCnT//Ed
+        bhcGWTQ49w6dfWdwSGy2HByncC0Tx5/baV/JBZYrjUA6n39qWKjGsEGqUXgYeKmh
+        qdzxc2nof6wlWzRlC6l5miKgR4n00a7UUvNb3FRbofY3wHA8d8Rf6a3IcXe9CNgE
+        PwkaMYAsBwbFbwT0d1bzj/QyMXGNwVTiOzqbxid6Zcc3hRSU9QMqCZfdCDkVBBHJ
+        YUQ6h0NHR172zdv4tvTuoegmzD91htoGIqiO1A53SE24hMtO+OAooXK1fO/4imvF
+        gnBwRd8sduTwmv+MgzVdXuTdyskzgWMu715FkhXd1x+SyQLCYEpVE7/LFpYtnwi+
+        Qb1S/uOHaO2KYOHU4WeQ7yZSbRv7YfDUaR0fp+HJH9XThMoAMChB7NEh+qPj2O3P
+        Pm4e2ZTGA6OCyMKJxkCPNJ+PRR9zdYMAzsw5Qxm85Zh30rtIDASuf+IlhEWSSUMz
+        MBcOJLHk8bmZARNNKqI2yh39o1h6GophV+g9kwachOaIH2a3DbyNbmni3WeVzTbg
+        Wluvc7CbVHVO1XM2Ld4CVZvfhlOkGse34TiJ4qOl9f3xOUow
+        -----END CERTIFICATE-----
+  redis:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  controller:
+    processors: {}
+    resources:
+      limits:
+        cpu: '2'
+        memory: 2Gi
+      requests:
+        cpu: 250m
+        memory: 1Gi
+    sharding: {}
+status:
+  applicationController: Running
+  dex: Running
+  phase: Available
+  redis: Running
+  repo: Running
+  server: Running
+  ssoConfig: Success
+
