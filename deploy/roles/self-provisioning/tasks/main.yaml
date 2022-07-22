@@ -1,5 +1,0 @@
----
-- name: Disable self-provisioner
-  k8s:
-    definition: "{{ lookup('file', 'self-provisioning.yaml') }}"
- 

@@ -1,6 +1,0 @@
----
-smtp_from: admin@localhost 
-#smtp_smarthost: localhost 
-#default_smtp_to: admin@localhost 
-#critical_smtp_to: admin@localhost
-

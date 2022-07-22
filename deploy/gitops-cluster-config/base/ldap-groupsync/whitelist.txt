@@ -1,8 +1,0 @@
-CN=rbac-openshift-admin,OU=Roles,OU=Role Based Access,DC=bsc,DC=bscal,DC=com
-CN=rbac-openshift-appdev,OU=Roles,OU=Role Based Access,DC=bsc,DC=bscal,DC=com
-CN=rbac-openshift-appdev-digital,OU=Roles,OU=Role Based Access,DC=bsc,DC=bscal,DC=com
-CN=rbac-openshift-appdev-digital-nsadmin,OU=Roles,OU=Role Based Access,DC=bsc,DC=bscal,DC=com
-CN=rbac-openshift-architect,OU=Roles,OU=Role Based Access,DC=bsc,DC=bscal,DC=com
-CN=rbac-openshift-testing,OU=Roles,OU=Role Based Access,DC=bsc,DC=bscal,DC=com
-CN=rbac-openshift-testing-perf,OU=Roles,OU=Role Based Access,DC=bsc,DC=bscal,DC=com
-CN=rbac-openshift-testing-qa,OU=Roles,OU=Role Based Access,DC=bsc,DC=bscal,DC=com
