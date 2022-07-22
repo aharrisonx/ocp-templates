@@ -1,0 +1,57 @@
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  annotations:
+    machine.openshift.io/memoryMb: '32768'
+    machine.openshift.io/vCPU: '8'
+  name: prodk8s-cjrhd-infra
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: prodk8s-cjrhd
+spec:
+  deletePolicy: Oldest
+  replicas: 3
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: prodk8s-cjrhd
+      machine.openshift.io/cluster-api-machineset: prodk8s-cjrhd-infra
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: prodk8s-cjrhd
+        machine.openshift.io/cluster-api-machine-role: infra
+        machine.openshift.io/cluster-api-machine-type: infra
+        machine.openshift.io/cluster-api-machineset: prodk8s-cjrhd-infra
+    spec:
+      metadata:
+        labels:
+          node-role.kubernetes.io/infra: ''
+      providerSpec:
+        value:
+          numCoresPerSocket: 2
+          diskGiB: 120
+          snapshot: ''
+          userDataSecret:
+            name: worker-user-data
+          memoryMiB: 32768
+          credentialsSecret:
+            name: vsphere-cloud-credentials
+          network:
+            devices:
+              - networkName: GUEST_VLAN807
+          metadata:
+            creationTimestamp: null
+          numCPUs: 8
+          kind: VSphereMachineProviderSpec
+          workspace:
+            datacenter: BSC_SAC
+            datastore: SAC-PURE-CORE1-12
+            folder: /BSC_SAC/vm/prodk8s-cjrhd
+            resourcePool: /BSC_SAC/host/SAC_CORE_01/Resources
+            server: winf236p.bsc.bscal.com
+          template: prodk8s-cjrhd-rhcos
+          apiVersion: vsphereprovider.openshift.io/v1beta1
+      taints:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/infra
+          value: Exists

@@ -1,0 +1,9 @@
+---
+- name: Create configmap for BSC CA certs
+  k8s:
+    definition: "{{ lookup('file', 'bsc-ca-configmap.yaml') }}"
+ 
+- name: Add BSC CA configmap to cluster wide proxy
+  k8s:
+    definition: "{{ lookup('file', 'cluster-proxy.yaml') }}"
+

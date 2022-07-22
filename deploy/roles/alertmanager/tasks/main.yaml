@@ -1,0 +1,5 @@
+---
+- name: Create Alertmanager
+  k8s:
+    definition: "{{ lookup('template', 'alertmanager-main-secret.yaml.j2') }}"
+

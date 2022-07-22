@@ -1,0 +1,12 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../base
+  - alertmanager
+  - infra-machineset
+  - namespace-labeling
+
+patchesStrategicMerge:
+- image-registries/regsec.yaml

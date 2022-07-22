@@ -1,0 +1,50 @@
+---
+# base directory
+base_dir: /var/tmp
+bin_dir: "{{ base_dir }}/bin"
+
+# cluster name
+cluster_name: cluster-sandbox
+base_domain: example.net
+install_dir: "{{ base_dir }}/{{ cluster_name }}"
+install_log: "{{ base_dir }}/{{ cluster_name }}.installation.log"
+
+# default kubeconfig
+kubeconfig: "{{ install_dir }}/auth/kubeconfig"
+
+# openshift version
+openshift_version: 4.7.7
+openshift_install_url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ openshift_version }}/openshift-install-linux-{{ openshift_version }}.tar.gz
+openshift_cli_url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ openshift_version }}/openshift-client-linux-{{ openshift_version }}.tar.gz
+openshift_install: "{{ bin_dir }}/openshift-install"
+oc: "{{ bin_dir }}/oc"
+
+# info for vsphere
+master_cores_per_socket: 2
+worker_cores_per_socket: 2
+master_cpus: 4
+worker_cpus: 4
+master_memory_mb: 16384
+worker_memory_mb: 16384
+master_disk_size_gb: 100
+worker_disk_size_gb: 100
+worker_replicas: 3
+api_vip: 192.168.3.110
+ingress_vip: 192.168.3.111
+vsphere_vcenter: vcenter.example.net
+vsphere_datacenter: datacenter2
+vsphere_cluster: cluster2a
+vsphere_datastore: datastore2
+vsphere_network: vm_network
+vsphere_username: 'administrator@example.net'
+vsphere_password: 'password123'
+
+# network info
+clustercidr: "10.128.0.0/14"
+servicecidr: "172.30.0.0/16"
+machinecidr: "10.0.0.0/16"
+
+# pull secret and ssh key
+pull_secret: '{"auths":{"cloud.openshift.com":{"auth":"abcdefghijkl==","email":"administrator@example.net"},"quay.io":{"auth":"abcdefghijkl==","email":"administrator@example.net"},"registry.connect.redhat.com":{"auth":"abcdefghijkl==","email":"administrator@example.net"},"registry.redhat.io":{"auth":"abcdefghijkl==","email":"administrator@example.net"}}}'
+ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC9sMW7WOpYpFwH4iaVAznbTriJAMkBNpoCr/vrY9QiC70OSvKQM6uX4kPaO2O5uj437FmzNF5FQ73ZIosqAVEw0IQf4nyXCOckYvsX1Qd9qK8nZZm8TdDaj2BRCgvBFzmJh/lDy303YjqwrFqD5mEGzqHFNFS0v9Hf4PFDpt6muc1sbRJ5KvoP7iLA3h91AIGpDE4mqK50UymvbHQRd0M4DPe1665GVzGzUvQ5tcECREWcwLTSPZOfPG4jt6nWtogJeFVFiBFOr9dP+59Ycx53sMWq9lIb685VPP493sDUPARcMAEh+ooCGujihLi/1q/cbz19P41M86rwGRsAyKT3bK2V3jA/MpaDykRqRGP2Gi5ZU7GKs6DZmg4N4nWjEX+6/ThQZhdlIOfJSIP4VBFjGVrUkh65ZtY7jP17d6AS06RE9GZSolkcFJev3eItuaAgjWu2ptECGxbi281E9Qc/UliLMW7kNU36xISyB7UHhX4EF+mR/AOi6WzaNA3BVgk='
+

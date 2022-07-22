@@ -1,0 +1,57 @@
+---
+- name: Create fluentd-splunk namespace
+  k8s:
+    definition: "{{ lookup('file', 'fluentd-splunk-namespace.yaml') }}"
+
+- name: Create fluentd-splunk secret
+  k8s:
+    definition: "{{ lookup('template', 'fluentd-splunk-secret.yaml.j2') }}"
+
+- name: Create fluentd-splunk statefulset and service
+  k8s:
+    definition: "{{ lookup('file', '{{ item }}') }}"
+  loop:
+  - fluentd-splunk-statefulset.yaml
+  - fluentd-splunk-service.yaml
+
+- name: Install openshift logging operator
+  k8s:
+    definition: "{{ lookup('file', 'openshift-logging.yaml') }}"
+
+- name: Find openshift logging installplan name
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    namespace: openshift-logging
+    name: cluster-logging
+  register: clusterlogging_subscription
+  until:
+  - clusterlogging_subscription.resources[0].status.installplan.name is defined
+  - clusterlogging_subscription.resources[0].status.installplan.name is match("install-.*")
+  delay: 3
+  retries: 15
+
+- name: Wait for openshift logging operator to finish installation
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    namespace: openshift-logging
+    name: "{{ clusterlogging_subscription.resources[0].status.installplan.name }}"
+  register: clusterlogging_installplan
+  until:
+  - clusterlogging_installplan.resources[0].status.phase is defined
+  - clusterlogging_installplan.resources[0].status.phase == "Complete"
+  delay: 20
+  retries: 40
+
+- name: Create fluentd-forward secret
+  k8s:
+    definition: "{{ lookup('template', 'fluentd-forward-secret.yaml.j2') }}"
+
+- name: Create ClusterLogging and ClusterLogForwarder resources
+  k8s:
+    definition: "{{ lookup('file', '{{ item }}') }}"
+  loop:
+  - clusterlogging.yaml
+  - clusterlogforward-fluentd-splunk.yaml
+

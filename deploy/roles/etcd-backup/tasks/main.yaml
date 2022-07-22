@@ -1,0 +1,9 @@
+---
+- name: Add cronjob to back up etcd database
+  k8s:
+    definition: "{{ lookup('file', 'etcd-backup.yaml') }}"
+
+- name: Add NFS persistentvolume for etcd backup
+  k8s:
+    definition: "{{ lookup('template', 'etcd-backup-pv.yaml.j2') }}"
+

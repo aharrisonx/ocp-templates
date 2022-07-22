@@ -1,0 +1,47 @@
+---
+#
+# Create a virtual env with openshift module:
+#   - python3 -m venv ~/openshift
+#   - source ~/openshift/bin/activate
+#   - pip install openshift
+# run 'oc get nodes' to make sure you are on the right cluster
+# ansible-playbook -v -e cluster_name='npek8s' post-install.yaml
+#
+- name: Run post installation tasks
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+  vars:
+    ansible_python_interpreter: ~/openshift/bin/python3
+#  vars_files:
+#  - clusters/{{ cluster_name }}.yaml
+  environment:
+    K8S_AUTH_KUBECONFIG: "{{ kubeconfig | default('~/.kube/config') }}"
+  roles:
+  - openshift-gitops-operator
+  - gitops-cluster-config
+  - dynatrace-operator
+  - pull-secrets
+  - sealed-secrets
+# Most of these should be managed via GitOps
+#  - trusted-ca
+#  - ldap-auth
+#  - infra-nodes
+#  - chrony
+#  - ingress
+#  - self-provisioning
+#  - appdynamics
+#  - fluentd-splunk
+#  - app-namespaces
+#  - alertmanager
+#  Working
+#  - machine-health
+#  - etcd-backup
+#  - splunk
+#  - external-registries
+#  Not yet
+#  - kubeadmin
+#  - project-template # with cpu/mem quota, storage usage, limitranges etc
+#  Not Using
+#  - internal-registry
+

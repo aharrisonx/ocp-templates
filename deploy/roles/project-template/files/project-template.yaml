@@ -1,0 +1,72 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: project-request
+  namespace: openshift-config
+objects:
+- apiVersion: project.openshift.io/v1
+  kind: Project
+  metadata:
+    annotations:
+      openshift.io/description: ${PROJECT_DESCRIPTION}
+      openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+      openshift.io/requester: ${PROJECT_REQUESTING_USER}
+    name: ${PROJECT_NAME}
+  spec: {}
+  status: {}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: admin
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: admin
+  subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: ${PROJECT_ADMIN_USER}
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: project-resources
+    namespace: ${PROJECT_NAME}
+  spec:
+    hard:
+      requests.cpu: "1" 
+      requests.memory: 8Gi 
+      requests.ephemeral-storage: 10Gi 
+      requests.storage: "50Gi" 
+      limits.cpu: "2" 
+      limits.memory: 16Gi 
+      limits.ephemeral-storage: 20Gi 
+- apiVersion: "v1"
+  kind: "LimitRange"
+  metadata:
+    name: "resource-limits" 
+    namespace: ${PROJECT_NAME}
+  spec:
+    limits:
+      - type: "Container"
+        max:
+          cpu: "1" 
+          memory: "8Gi" 
+        min:
+          cpu: "100m" 
+          memory: "4Mi" 
+        default:
+          cpu: "500m" 
+          memory: "512Mi" 
+        defaultRequest:
+          cpu: "100m" 
+          memory: "256Mi" 
+        maxLimitRequestRatio:
+          cpu: "10" 
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_DISPLAYNAME
+- name: PROJECT_DESCRIPTION
+- name: PROJECT_ADMIN_USER
+- name: PROJECT_REQUESTING_USER
+

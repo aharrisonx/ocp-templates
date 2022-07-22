@@ -1,0 +1,9 @@
+---
+- name: Create default project template
+  k8s:
+    definition: "{{ lookup('file', 'project-template.yaml') }}"
+
+- name: Modify cluster project config to use project template
+  k8s:
+    definition: "{{ lookup('file', 'cluster-project-config.yaml') }}"
+

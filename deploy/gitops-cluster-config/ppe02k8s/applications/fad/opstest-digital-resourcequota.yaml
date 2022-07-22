@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: project-resources
+  namespace: opstest-digital
+spec:
+  hard:
+    limits.ephemeral-storage: 8Gi
+    requests.cpu: 8
+    requests.ephemeral-storage: 4Gi
+    requests.memory: 32Gi
+    requests.storage: 100Gi
+    persistentvolumeclaims: 5
+

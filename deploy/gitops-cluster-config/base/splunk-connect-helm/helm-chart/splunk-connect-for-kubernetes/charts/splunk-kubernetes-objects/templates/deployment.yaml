@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "splunk-kubernetes-objects.fullname" . }}
+  labels:
+    app: {{ template "splunk-kubernetes-objects.name" . }}
+    chart: {{ template "splunk-kubernetes-objects.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "splunk-kubernetes-objects.name" . }}
+      release: {{ .Release.Name }}
+      engine: fluentd
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ template "splunk-kubernetes-objects.name" . }}
+        release: {{ .Release.Name }}
+        engine: fluentd
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "splunk-kubernetes-objects.serviceAccountName" . }}
+      terminationGracePeriodSeconds: 30
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{ if .Values.image.usePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecretName }}
+      {{ end }}
+      containers:
+      - name: splunk-fluentd-k8s-objects
+        image: {{ template "splunk-kubernetes-objects.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: MY_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: SPLUNK_HEC_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "splunk-kubernetes-objects.secret" . }}
+                key: splunk_hec_token
+          {{- if or .Values.splunk.hec.caFile .Values.global.splunk.hec.caFile }}
+          - name: SSL_CERT_FILE
+            value: /fluentd/etc/splunk/hec_ca_file
+          {{- end }}
+          {{- if .Values.environmentVar }}
+          {{- toYaml .Values.environmentVar | nindent 10 }}
+          {{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        securityContext:
+          runAsNonRoot: false
+        volumeMounts:
+        - name: conf-configmap
+          mountPath: /fluentd/etc
+        {{- if .Values.checkpointFile.volume }}
+        - name: checkpoints
+          mountPath: /fluentd/var/checkpoints
+        {{- end }}
+        - name: secrets
+          mountPath: /fluentd/etc/splunk
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /api/plugins.json
+            port: 24220
+          initialDelaySeconds: 60
+          periodSeconds: 60
+        {{- if .Values.global.monitoring_agent_enabled }}
+        ports:
+        - containerPort: 24220
+          name: monitor-agent
+          protocol: TCP
+        {{- end }}
+      volumes:
+      - name: conf-configmap
+        configMap:
+          name: {{ template "splunk-kubernetes-objects.fullname" . }}
+      - name: secrets
+        secret:
+          secretName: {{ template "splunk-kubernetes-objects.secret" . }}
+      {{- if .Values.checkpointFile.volume }}
+      - name: checkpoints
+{{ toYaml .Values.checkpointFile.volume | indent 8 }}
+      {{- end -}}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}

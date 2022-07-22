@@ -1,0 +1,12 @@
+- name: Create secret for ldap bindpassword
+  k8s:
+    definition: "{{ lookup('file', 'ldap-secret.yaml') }}"
+ 
+- name: Add ldap authentictaion
+  k8s:
+    definition: "{{ lookup('file', 'ldap-oauth.yaml') }}"
+
+- name: Add bsc cluster admins
+  k8s:
+    definition: "{{ lookup('file', 'bsc-cluster-admins-crb.yaml') }}"
+

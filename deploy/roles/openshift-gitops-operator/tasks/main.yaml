@@ -1,0 +1,49 @@
+---
+- name: Install OpenShift GitOps operator
+  k8s:
+    definition: "{{ lookup('file', '{{ item }}') }}"
+  loop:
+  - openshift-gitops-namespace.yaml
+  - bitbucket-secret.yaml
+  - openshift-gitops-operator-subscription.yaml
+  - gitops-cluster-configs-clusterrole.yaml
+  - gitops-cluster-configs-clusterrolebinding.yaml
+
+- name: Find OpenShift GitOps installplan name
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    namespace: openshift-operators
+    name: openshift-gitops-operator
+  register: argocd_subscription
+  until:
+  - argocd_subscription.resources[0].status.installplan.name is defined
+  - argocd_subscription.resources[0].status.installplan.name is match("install-.*")
+  delay: 15
+  retries: 40
+
+- name: Wait for OpenShift GitOps operator to finish installation
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: InstallPlan
+    namespace: openshift-operators
+    name: "{{ argocd_subscription.resources[0].status.installplan.name }}"
+  register: argocd_installplan
+  until:
+  - argocd_installplan.resources[0].status.phase is defined
+  - argocd_installplan.resources[0].status.phase == "Complete"
+  delay: 15
+  retries: 40
+
+- name: Update ArgoCD Instance
+  k8s:
+    definition: "{{ lookup('file', 'openshift-gitops-argocd.yaml') }}"
+
+- name: Remove existing argocd-cm configmap (to regenerate new one)
+  k8s:
+    state: absent
+    api_version: v1
+    kind: ConfigMap
+    namespace: openshift-gitops
+    name: argocd-cm
+

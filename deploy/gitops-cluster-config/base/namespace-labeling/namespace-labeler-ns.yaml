@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: namespace-labeler
+    openshift.io/cluster-monitoring: "true"
+    owner: infra-ops
+  name: namespace-labeler
+spec:
+  finalizers:
+  - kubernetes
+

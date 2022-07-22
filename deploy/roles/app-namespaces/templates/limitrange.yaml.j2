@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: resource-limits 
+  namespace: {{ ns.name }}
+spec:
+  limits:
+    - type: Container
+      max:
+        cpu: {{ ns.limitrange.max.cpu | default("1") }} 
+        memory: {{ ns.limitrange.max.memory | default("8Gi") }}
+      min:
+        cpu: {{ ns.limitrange.min.cpu | default("100m") }}
+        memory: {{ ns.limitrange.min.memory | default("4Mi") }}
+      default:
+        cpu: {{ ns.limitrange.default.cpu | default("500m") }}
+        memory: {{ ns.limitrange.default.memory | default("512Mi") }}
+      defaultRequest:
+        cpu: {{ ns.limitrange.defaultRequest.cpu | default("100m") }}
+        memory: {{ ns.limitrange.defaultRequest.memory | default("256Mi") }}
+

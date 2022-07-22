@@ -1,0 +1,21 @@
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  outputs:
+   - name: fluentd-splunk
+     type: fluentdForward
+     url: tls://fluentd-splunk.fluentd-splunk.svc:24224
+     secret:
+        name: fluentd-forward
+  pipelines:
+   - name: ocp4-logs
+     inputRefs:
+     - infrastructure
+     - audit
+     - application
+     outputRefs:
+     - fluentd-splunk
+

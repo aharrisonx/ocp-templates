@@ -1,0 +1,57 @@
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rbac-openshift-appdev-digital-nsadmin
+  namespace: performance-digital
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: rbac-openshift-appdev-digital-nsadmin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: scrm_engineers
+  namespace: performance-digital
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: scrm_engineers
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rbac-openshift-appdev-digital
+  namespace: performance-digital
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: rbac-openshift-appdev-digital
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rbac-openshift-appdev
+  namespace: performance-digital
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: rbac-openshift-appdev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+

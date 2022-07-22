@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: project-resources
+  namespace: {{ ns.name  }}
+spec:
+  hard:
+    requests.cpu: {{ ns.resourcequota.requests.cpu | default("1") }}
+    requests.memory: {{ ns.resourcequota.requests.memory | default("8Gi") }}
+    requests.ephemeral-storage: {{ ns.resourcequota.requests.ephemeral | default("10Gi") }}
+    requests.storage: {{ ns.resourcequota.requests.storage | default("50Gi") }}
+    limits.cpu: {{ ns.resourcequota.limits.cpu | default("2") }}
+    limits.memory: {{ ns.resourcequota.limits.memory | default("16Gi") }}
+    limits.ephemeral-storage: {{ ns.resourcequota.limits.ephemeral | default("20Gi") }}
+

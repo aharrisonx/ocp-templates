@@ -1,0 +1,5 @@
+---
+- name: Enable Cluster Configurations for {{ cluster_name }}
+  k8s:
+    definition: "{{ lookup('template', 'gitops-cluster-config.yaml.j2') }}"
+

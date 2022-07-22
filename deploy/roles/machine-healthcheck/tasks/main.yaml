@@ -1,0 +1,14 @@
+---
+- name: Find Machinesets
+  k8s_info:
+    api_version: machine.openshift.io/v1beta1
+    kind: MachineSet
+  register: machinesets
+
+- name: Add machinehealthcheck for machinesets
+  k8s:
+    definition: "{{ lookup('template', 'machinehealthcheck.yaml.j2') }}"
+  loop: "{{ machinesets.resources | map(attribute='metadata.name') | flatten }}"
+  loop_control:
+    loop_var: machineset
+

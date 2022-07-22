@@ -1,0 +1,18 @@
+splunk:
+  hec:
+    token: 11111111-2222-3333-4444-555555555555
+    host: my.splunk.com
+
+kubernetes:
+  clusterName: "my-eks-cluster"
+
+customMetadata:
+  - name: "cloud_account_id"
+    value: "1234567890"
+  - name: "cloud_account_region"
+    value: "us-west-2"
+
+customMetadataAnnotations:
+  # Adds an 'application' field with the value of the 'splunk.com/application-field' annotation
+  - name: "application"
+    annotation: "splunk.com/application-field"

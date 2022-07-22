@@ -1,0 +1,11 @@
+---
+clusterNameAppD: dev
+nsToMonitorRegex: digitalsearch*
+nsToInstrumentRegex: digitalsearch*
+namespaceRegexAppD: digitalsearch-monitor
+appNameNameSpace: fad
+defaultAppNameAppD: npe-aip
+cpu_limits: 750m
+memory_limits: 1250Mi
+cpu_requests: 200m
+memory_requests: 128Mi
