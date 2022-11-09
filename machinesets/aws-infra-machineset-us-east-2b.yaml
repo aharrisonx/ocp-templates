@@ -23,9 +23,9 @@ spec:
         machine.openshift.io/cluster-api-machine-type: infra
         machine.openshift.io/cluster-api-machineset: cluster-64r66-6gxq7-infra-us-east-2b
     spec:
-      metadata: {}
-      labels:
-        node-role.kubernetes.io/infra: ""
+      metadata: 
+        labels:
+          node-role.kubernetes.io/infra: ""
       taints: 
         - key: node-role.kubernetes.io/infra
           effect: NoSchedule
