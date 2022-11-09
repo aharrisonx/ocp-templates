@@ -10,7 +10,7 @@ metadata:
   labels:
     machine.openshift.io/cluster-api-cluster: cluster-64r66-6gxq7
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       machine.openshift.io/cluster-api-cluster: cluster-64r66-6gxq7
