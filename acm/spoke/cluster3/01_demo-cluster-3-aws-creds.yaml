@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: demo-cluster-3-aws-creds
+  namespace: 'demo-cluster-3'
+stringData:
+  aws_access_key_id: *REDACTED*
+  aws_secret_access_key: *REDACTED*
