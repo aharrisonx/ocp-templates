@@ -9,7 +9,7 @@ metadata:
     vendor: OpenShift
     cluster.open-cluster-management.io/clusterset: 'default'
 spec:
-  baseDomain: sandbox2712.opentlc.com
+  baseDomain: $BASEDOMAIN
   clusterName: 'demo-cluster-2'
   controlPlaneConfig:
     servingCertificates: {}
@@ -61,6 +61,8 @@ spec:
         type: io1
       type: m5.xlarge
       zones:
+      - us-east-2a
+      - us-east-2b
       - us-east-2c
   replicas: 3
 ---
