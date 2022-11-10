@@ -1,0 +1,87 @@
+apiVersion: hive.openshift.io/v1
+kind: ClusterDeployment
+metadata:
+  name: 'demo-cluster-2'
+  namespace: 'demo-cluster-2'
+  labels:
+    cloud: 'AWS'
+    region: 'us-east-2'
+    vendor: OpenShift
+    cluster.open-cluster-management.io/clusterset: 'default'
+spec:
+  baseDomain: sandbox2712.opentlc.com
+  clusterName: 'demo-cluster-2'
+  controlPlaneConfig:
+    servingCertificates: {}
+  installAttemptsLimit: 1
+  installed: false
+  platform:
+    aws:
+      credentialsSecretRef:
+        name: demo-cluster-2-aws-creds
+      region: us-east-2
+  provisioning:
+    installConfigSecretRef:
+      name: demo-cluster-2-install-config
+    sshPrivateKeySecretRef:
+      name: demo-cluster-2-ssh-private-key
+    imageSetRef:
+       #quay.io/openshift-release-dev/ocp-release:4.11.12-x86_64
+      name: img4.11.12-x86-64-appsub
+  pullSecretRef:
+    name: demo-cluster-2-pull-secret
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  labels:
+    cloud: Amazon
+    region: us-east-2
+    name: 'demo-cluster-2'
+    vendor: OpenShift
+    cluster.open-cluster-management.io/clusterset: 'default'
+  name: 'demo-cluster-2'
+spec:
+  hubAcceptsClient: true
+---
+apiVersion: hive.openshift.io/v1
+kind: MachinePool
+metadata:
+  name: demo-cluster-2-worker
+  namespace: 'demo-cluster-2'
+spec:
+  clusterDeploymentRef:
+    name: 'demo-cluster-2'
+  name: worker
+  platform:
+    aws:
+      rootVolume:
+        iops: 2000
+        size: 100
+        type: io1
+      type: m5.xlarge
+      zones:
+      - us-east-2c
+  replicas: 3
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: 'demo-cluster-2'
+  namespace: 'demo-cluster-2'
+spec:
+  clusterName: 'demo-cluster-2'
+  clusterNamespace: 'demo-cluster-2'
+  clusterLabels:
+    cloud: Amazon
+    vendor: OpenShift
+  applicationManager:
+    enabled: true
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  certPolicyController:
+    enabled: true
+  iamPolicyController:
+    enabled: true
