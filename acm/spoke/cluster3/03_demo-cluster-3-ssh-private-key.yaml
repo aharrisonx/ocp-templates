@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: demo-cluster-3-ssh-private-key
+  namespace: 'demo-cluster-3'
+stringData:
+  ssh-privatekey: |-
+    -----BEGIN RSA PRIVATE KEY-----
+
+    -----END RSA PRIVATE KEY-----
+type: Opaque
