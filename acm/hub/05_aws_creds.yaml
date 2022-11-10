@@ -7,15 +7,18 @@ metadata:
   labels:
     cluster.open-cluster-management.io/credentials: ""
     cluster.open-cluster-management.io/type: aws
-  annotations:
-    credential-hash: JfkYxMT4wudhCRgbsdKilPYwNm9VTkF+jnhiocMiwzg=
 stringData:
-  aws_access_key_id: "********************"
-  aws_secret_access_key: "********************"
+  aws_access_key_id: *REDACTED*
+  aws_secret_access_key: *REDACTED*
   baseDomain: foo.com
-  pullSecret: "********************"
-  ssh-privatekey: "********************"
-  ssh-publickey: "********************"
+  pullSecret: >
+    *REDACTED*
+  ssh-privatekey: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    
+    -----END OPENSSH PRIVATE KEY-----
+  ssh-publickey: >
+    *REDACTED*
   httpProxy: ""
   httpsProxy: ""
   noProxy: ""
