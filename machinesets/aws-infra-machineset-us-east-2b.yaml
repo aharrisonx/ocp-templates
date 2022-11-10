@@ -65,17 +65,5 @@ spec:
           tags:
             - name: kubernetes.io/cluster/$CLUSTERID
               value: owned
-            - name: Stack
-              value: project ocp4-cluster-64r66
-            - name: env_type
-              value: ocp4-cluster
-            - name: guid
-              value: 64r66
-            - name: owner
-              value: unknown
-            - name: platform
-              value: RHPDS
-            - name: uuid
-              value: 10e64f89-b5fa-568f-a1b6-49ef0c65c6d5
           userDataSecret:
             name: worker-user-data
