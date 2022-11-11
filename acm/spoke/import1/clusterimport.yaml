@@ -1,0 +1,48 @@
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  name: demo-import-1
+  labels:
+    name: demo-import-1
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: default
+  annotations: {}
+spec:
+  hubAcceptsClient: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auto-import-secret
+  namespace: demo-import-1
+stringData:
+  autoImportRetry: "2"
+  token: *REDACTED*
+  server: $CLUSTER_API_ADDRESS
+type: Opaque
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: demo-import-1
+  namespace: demo-import-1
+spec:
+  clusterName: demo-import-1
+  clusterNamespace: demo-import-1
+  clusterLabels:
+    name: demo-import-1
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: default
+  applicationManager:
+    enabled: true
+    argocdCluster: false
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  certPolicyController:
+    enabled: true
+  iamPolicyController:
+    enabled: true
