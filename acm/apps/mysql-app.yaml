@@ -1,0 +1,67 @@
+apiVersion: v1                    
+kind: Namespace
+metadata:
+  name: mysql                             
+---
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+  name: mysql
+  namespace: mysql
+spec:
+  componentKinds:
+  - group: apps.open-cluster-management.io
+    kind: Subscription
+  descriptor: {}
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values: 
+          - mysql
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ggithubcom-aharrisonx-do480-apps-ns
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Channel
+metadata:
+  annotations:
+    apps.open-cluster-management.io/reconcile-rate: medium
+  name: ggithubcom-aharrisonx-do480-apps
+  namespace: ggithubcom-aharrisonx-do480-apps-ns
+spec:
+  type: Git
+  pathname: 'https://github.com/aharrisonx/DO480-apps/'
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: Subscription
+metadata:
+  annotations:
+    apps.open-cluster-management.io/git-branch: main
+    apps.open-cluster-management.io/git-path: mysql
+    apps.open-cluster-management.io/reconcile-option: merge
+  labels:
+    app: mysql
+  name: mysql-subscription-1
+  namespace: mysql
+spec:
+  channel: ggithubcom-aharrisonx-do480-apps-ns/ggithubcom-aharrisonx-do480-apps
+  placement:
+    placementRef:
+      kind: PlacementRule
+      name: mysql-placement-1
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  labels:
+    app: mysql
+  name: mysql-placement-1
+  namespace: mysql
+spec:
+  clusterSelector:
+    matchLabels:
+      'local-cluster': 'true'
