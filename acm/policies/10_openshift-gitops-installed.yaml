@@ -2,6 +2,7 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
   name: openshift-gitops-installed
+  namespace: default-policies
   annotations:
     policy.open-cluster-management.io/standards: NIST SP 800-53
     policy.open-cluster-management.io/categories: CM Configuration Management
@@ -40,6 +41,7 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
   name: binding-argo-development
+  namespace: default-policies
 placementRef:
   name: all-openshift
   kind: PlacementRule
@@ -49,11 +51,11 @@ subjects:
     kind: Policy
     apiGroup: policy.open-cluster-management.io
 ---
----
 apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
   name: all-openshift
+  namespace: default-policies
 spec:
   clusterConditions:
   - status: "True"
