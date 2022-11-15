@@ -2,6 +2,7 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
   name: policy-certificate
+  namespace: default-policies
   annotations:
     policy.open-cluster-management.io/standards: NIST SP 800-53
     policy.open-cluster-management.io/categories: SC System and Communications Protection
@@ -26,6 +27,7 @@ apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
 metadata:
   name: binding-policy-certificate
+  namespace: default-policies
 placementRef:
   name: placement-policy-certificate
   kind: PlacementRule
@@ -39,6 +41,7 @@ apiVersion: apps.open-cluster-management.io/v1
 kind: PlacementRule
 metadata:
   name: placement-policy-certificate
+  namespace: default-policies
 spec:
   clusterConditions:
   - status: "True"
