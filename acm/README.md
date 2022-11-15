@@ -14,6 +14,18 @@
 - Clone the repo into your local system using SSH or HTTPS
 ```
 git clone https://github.com/aharrisonx/ocp-templates.git
-cd ocp-templates/acm
+cd ocp-templates/acm/hub
 ```
-
+- Modify the following files with appropriate credentials
+    - ocp-templates/acm/hub/05_aws_creds.yaml
+    - ocp-templates/acm/mcobs/01_mcobs_pull_secret.yaml
+    - ocp-templates/acm/mcobs/03_thanos_object_storage_secret.yaml
+    - ocp-templates/acm/spoke/cluster2/01_demo-cluster-2-aws-creds.yaml
+    - ocp-templates/acm/spoke/cluster2/02_demo-cluster-2-install-config.yaml
+    - ocp-templates/acm/spoke/cluster2/03_demo-cluster-2-ssh-private-key.yaml
+    - ocp-templates/acm/spoke/cluster2/04_demo-cluster-2-pull-secret.yaml
+    - ocp-templates/acm/spoke/cluster3/01_demo-cluster-3-aws-creds.yaml
+    - ocp-templates/acm/spoke/cluster3/02_demo-cluster-3-install-config.yaml
+    - ocp-templates/acm/spoke/cluster3/03_demo-cluster-3-ssh-private-key.yaml
+    - ocp-templates/acm/spoke/cluster3/04_demo-cluster-3-pull-secret.yaml
+    - ocp-templates/acm/spoke/import1/clusterimport.yaml
