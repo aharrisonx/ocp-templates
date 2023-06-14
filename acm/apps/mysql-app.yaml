@@ -64,4 +64,4 @@ metadata:
 spec:
   clusterSelector:
     matchLabels:
-      'local-cluster': 'true'
+      'name': 'demo-cluster-3'
