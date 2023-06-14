@@ -64,4 +64,4 @@ metadata:
 spec:
   clusterSelector:
     matchLabels:
-      'name': 'demo-cluster-3'
+      'environment': 'dev'
