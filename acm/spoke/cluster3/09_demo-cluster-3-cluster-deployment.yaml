@@ -7,7 +7,8 @@ metadata:
     cloud: 'AWS'
     region: 'us-east-2'
     vendor: OpenShift
-    cluster.open-cluster-management.io/clusterset: 'default'
+    environment: dev
+    cluster.open-cluster-management.io/clusterset: 'non-local'
 spec:
   baseDomain: $BASEDOMAIN
   clusterName: 'demo-cluster-3'
@@ -39,7 +40,8 @@ metadata:
     region: us-east-2
     name: 'demo-cluster-3'
     vendor: OpenShift
-    cluster.open-cluster-management.io/clusterset: 'default'
+    environment: dev
+    cluster.open-cluster-management.io/clusterset: 'non-local'
   name: 'demo-cluster-3'
 spec:
   hubAcceptsClient: true
@@ -77,6 +79,7 @@ spec:
   clusterLabels:
     cloud: Amazon
     vendor: OpenShift
+    environment: dev
   applicationManager:
     enabled: true
   policyController:
