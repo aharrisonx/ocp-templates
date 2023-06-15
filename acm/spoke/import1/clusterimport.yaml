@@ -11,7 +11,8 @@ metadata:
     name: demo-import-1
     cloud: auto-detect
     vendor: auto-detect
-    cluster.open-cluster-management.io/clusterset: default
+    environment: prod
+    cluster.open-cluster-management.io/clusterset: non-local
   annotations: {}
 spec:
   hubAcceptsClient: true
@@ -39,7 +40,8 @@ spec:
     name: demo-import-1
     cloud: auto-detect
     vendor: auto-detect
-    cluster.open-cluster-management.io/clusterset: default
+    environment: prod
+    cluster.open-cluster-management.io/clusterset: non-local
   applicationManager:
     enabled: true
     argocdCluster: false
