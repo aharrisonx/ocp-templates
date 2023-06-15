@@ -78,6 +78,7 @@ spec:
   clusterLabels:
     cloud: Amazon
     vendor: OpenShift
+    environment: prod
   applicationManager:
     enabled: true
   policyController:
