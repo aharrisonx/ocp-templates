@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: demo-import-1
+  name: demo-import-cluster
 ---
 apiVersion: cluster.open-cluster-management.io/v1
 kind: ManagedCluster
 metadata:
-  name: demo-import-1
+  name: demo-import-cluster
   labels:
-    name: demo-import-1
+    name: demo-import-cluster
     cloud: auto-detect
     vendor: auto-detect
     environment: prod
@@ -21,7 +21,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: auto-import-secret
-  namespace: demo-import-1
+  namespace: demo-import-cluster
 stringData:
   autoImportRetry: "2"
   token: *REDACTED*
@@ -31,20 +31,19 @@ type: Opaque
 apiVersion: agent.open-cluster-management.io/v1
 kind: KlusterletAddonConfig
 metadata:
-  name: demo-import-1
-  namespace: demo-import-1
+  name: demo-import-cluster
+  namespace: demo-import-cluster
 spec:
-  clusterName: demo-import-1
-  clusterNamespace: demo-import-1
+  clusterName: demo-import-cluster
+  clusterNamespace: demo-import-cluster
   clusterLabels:
-    name: demo-import-1
+    name: demo-import-cluster
     cloud: auto-detect
     vendor: auto-detect
     environment: prod
     cluster.open-cluster-management.io/clusterset: non-local
   applicationManager:
     enabled: true
-    argocdCluster: false
   policyController:
     enabled: true
   searchCollector:
