@@ -8,7 +8,7 @@
 - [Import 1 spoke cluster](https://github.com/aharrisonx/ocp-templates/tree/main/acm/spoke)
 - [Apply 4 policies](https://github.com/aharrisonx/ocp-templates/tree/main/acm/policies)
 - [Deploy 1 app](https://github.com/aharrisonx/ocp-templates/tree/main/acm/apps)
-- [Deploy Day2 configs](https://github.com/aharrisonx/ocp-templates/tree/main/acm/day2)
+- [Deploy Day 2 configs](https://github.com/aharrisonx/ocp-templates/tree/main/acm/day2)
 
 ## How to use this repo
 
