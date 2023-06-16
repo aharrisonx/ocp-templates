@@ -33,9 +33,10 @@ cd ocp-templates/acm
 ```
 ocp-templates/acm:$ oc create -f hub/
 ocp-templates/acm:$ oc create -f mcobs/
+ocp-templates/acm:$ oc create -f policies/
+ocp-templates/acm:$ oc create -f day2/
+ocp-templates/acm:$ oc create -f apps/
 ocp-templates/acm:$ oc create -f spoke/cluster2
 ocp-templates/acm:$ oc create -f spoke/cluster3
 ocp-templates/acm:$ oc create -f spoke/import1
-ocp-templates/acm:$ oc create -f policies/
-ocp-templates/acm:$ oc create -f apps/
 ```
