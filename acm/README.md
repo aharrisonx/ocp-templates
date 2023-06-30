@@ -31,8 +31,8 @@ cd ocp-templates/acm
     - ocp-templates/acm/spoke/cluster3/04_demo-cluster-3-pull-secret.yaml
     - ocp-templates/acm/spoke/import1/clusterimport.yaml
 ```
-ocp-templates/acm:$ oc create -f hub/
-ocp-templates/acm:$ oc create -f mcobs/
+ocp-templates/acm:$ oc create -f hub/  (Installs the ACM Operator and required multicluster-engine components)
+ocp-templates/acm:$ oc create -f mcobs/  (Stands up Multicluster Observability)
 ocp-templates/acm:$ oc create -f policies/
 ocp-templates/acm:$ oc create -f day2/
 ocp-templates/acm:$ oc create -f apps/
