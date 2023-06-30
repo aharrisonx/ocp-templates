@@ -1,5 +1,5 @@
 # Red Hat Advanced Cluster Management Demo
-
+This repo currently uses AWS as the infrastructure platform.  In order to be able to deploy all of the clusters and have them all exist during the demo, you must request an ElasticIP Quota Increase. The Default is 5, and you'll need to request 25 using the [AWS Service Quotas Console](https://aws.amazon.com/getting-started/hands-on/request-service-quota-increase/). This does not incur any additional costs in AWS, however the ec2 instances you spin up to use them will.
 ## YAML manifests to:
 
 - [Deploy RHACM to hub cluster](https://github.com/aharrisonx/ocp-templates/tree/main/acm/hub)
