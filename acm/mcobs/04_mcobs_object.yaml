@@ -16,5 +16,5 @@ spec:
       name: thanos-object-storage
     receiveStorageSize: 20Gi
     ruleStorageSize: 1Gi
-    storageClass: ocs-external-storagecluster-ceph-rbd
+    storageClass: ocs-storagecluster-ceph-rbd
     storeStorageSize: 10Gi
