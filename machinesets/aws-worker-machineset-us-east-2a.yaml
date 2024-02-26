@@ -57,7 +57,7 @@ spec:
               value: owned
           deviceIndex: 0
           ami:
-            id: ami-0abf0ec5cdd856934
+            id: $AMI_ID
           subnet:
             filters:
               - name: 'tag:Name'
