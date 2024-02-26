@@ -32,7 +32,7 @@ spec:
       providerSpec:
         value:
           ami:
-            id: ami-0071f3bde6f689766
+            id: $AMI_ID
           apiVersion: awsproviderconfig.openshift.io/v1beta1
           blockDevices:
             - ebs:
@@ -41,7 +41,7 @@ spec:
                 kmsKey:
                   arn: ''
                 volumeSize: 120
-                volumeType: gp2
+                volumeType: gp3
           credentialsSecret:
             name: aws-cloud-credentials
           deviceIndex: 0
