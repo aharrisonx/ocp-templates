@@ -3,8 +3,8 @@ kind: MachineSet
 metadata:
   annotations:
     machine.openshift.io/GPU: '0'
-    machine.openshift.io/memoryMb: '16384'
-    machine.openshift.io/vCPU: '4'
+    machine.openshift.io/memoryMb: '65536'
+    machine.openshift.io/vCPU: '16'
   name: $CLUSTERID-acm-worker-us-east-2b
   namespace: openshift-machine-api
   labels:
