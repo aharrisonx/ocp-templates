@@ -1,0 +1,57 @@
+additionalTrustBundlePolicy: Proxyonly
+apiVersion: v1
+baseDomain: $BASE_DOMAIN
+compute:
+- architecture: amd64
+  hyperthreading: Enabled
+  name: worker
+  platform: {}
+  replicas: 3
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  platform: {}
+  replicas: 3
+metadata:
+  creationTimestamp: null
+  name: $OCP_CLUSTER_NAME
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: $MACHINE_CIDR
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  vsphere:
+    apiVIPs:
+    - $API_VIP
+    failureDomains:
+    - name: generated-failure-domain
+      region: generated-region
+      server: $VCENTER
+      topology:
+        computeCluster: /$DATACENTER/host/$VMWARE_CLUSTER_ID
+        datacenter: $DATACENTER
+        datastore: /$DATACENTER/datastore/$VMWARE_DATASTORE_NAME
+        networks:
+        - segment-sandbox-qgp9x
+        resourcePool: /$DATACENTER/host/$VMWARE_CLUSTER_ID//Resources
+        folder: /$DATACENTER/vm/$VM_DIR_NAME/$VM_FOLDER_NAME
+      zone: generated-zone
+    ingressVIPs:
+    - $INGRESS_VIP
+    vcenters:
+    - datacenters:
+      - $DATACENTER
+      password: $VC_USER_PASS
+      port: 443
+      server: $VCENTER
+      user: $VC_USER_NAME
+publish: External
+pullSecret: *REDACTED*
+sshKey: |
+  *REDACTED*
