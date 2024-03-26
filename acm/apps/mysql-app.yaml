@@ -64,4 +64,4 @@ metadata:
 spec:
   clusterSelector:
     matchLabels:
-      'environment': 'dev'
+      'env': 'dev'
