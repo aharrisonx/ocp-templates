@@ -5,23 +5,23 @@ metadata:
     machine.openshift.io/GPU: '0'
     machine.openshift.io/memoryMb: '65536'
     machine.openshift.io/vCPU: '16'
-  name: $CLUSTERID-acm-worker-us-east-2b
+  name: $CLUSTERID-acm-worker-us-east-2a
   namespace: openshift-machine-api
   labels:
     machine.openshift.io/cluster-api-cluster: $CLUSTERID
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       machine.openshift.io/cluster-api-cluster: $CLUSTERID
-      machine.openshift.io/cluster-api-machineset: $CLUSTERID-acm-worker-us-east-2b
+      machine.openshift.io/cluster-api-machineset: $CLUSTERID-acm-worker-us-east-2a
   template:
     metadata:
       labels:
         machine.openshift.io/cluster-api-cluster: $CLUSTERID
         machine.openshift.io/cluster-api-machine-role: worker
         machine.openshift.io/cluster-api-machine-type: worker
-        machine.openshift.io/cluster-api-machineset: $CLUSTERID-acm-worker-us-east-2b
+        machine.openshift.io/cluster-api-machineset: $CLUSTERID-acm-worker-us-east-2a
     spec:
       lifecycleHooks: {}
       metadata: {}
@@ -30,7 +30,7 @@ spec:
           userDataSecret:
             name: worker-user-data
           placement:
-            availabilityZone: us-east-2b
+            availabilityZone: us-east-2a
             region: us-east-2
           credentialsSecret:
             name: aws-cloud-credentials
@@ -62,7 +62,7 @@ spec:
             filters:
               - name: 'tag:Name'
                 values:
-                  - $CLUSTERID-private-us-east-2b
+                  - $CLUSTERID-private-us-east-2a
           apiVersion: machine.openshift.io/v1beta1
           iamInstanceProfile:
             id: $CLUSTERID-worker-profile

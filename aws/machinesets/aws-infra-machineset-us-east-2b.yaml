@@ -5,23 +5,23 @@ metadata:
     machine.openshift.io/GPU: '0'
     machine.openshift.io/memoryMb: '65536'
     machine.openshift.io/vCPU: '16'
-  name: $CLUSTERID-infra-us-east-2a
+  name: $CLUSTERID-infra-us-east-2b
   namespace: openshift-machine-api
   labels:
     machine.openshift.io/cluster-api-cluster: $CLUSTERID
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       machine.openshift.io/cluster-api-cluster: $CLUSTERID
-      machine.openshift.io/cluster-api-machineset: $CLUSTERID-infra-us-east-2a
+      machine.openshift.io/cluster-api-machineset: $CLUSTERID-infra-us-east-2b
   template:
     metadata:
       labels:
         machine.openshift.io/cluster-api-cluster: $CLUSTERID
         machine.openshift.io/cluster-api-machine-role: infra
         machine.openshift.io/cluster-api-machine-type: infra
-        machine.openshift.io/cluster-api-machineset: $CLUSTERID-infra-us-east-2a
+        machine.openshift.io/cluster-api-machineset: $CLUSTERID-infra-us-east-2b
     spec:
       metadata: 
         labels:
@@ -50,7 +50,7 @@ spec:
           instanceType: m5a.4xlarge
           kind: AWSMachineProviderConfig
           placement:
-            availabilityZone: us-east-2a
+            availabilityZone: us-east-2b
             region: us-east-2
           securityGroups:
             - filters:
@@ -61,7 +61,7 @@ spec:
             filters:
               - name: 'tag:Name'
                 values:
-                  - $CLUSTERID-private-us-east-2a
+                  - $CLUSTERID-private-us-east-2b
           tags:
             - name: kubernetes.io/cluster/$CLUSTERID
               value: owned
