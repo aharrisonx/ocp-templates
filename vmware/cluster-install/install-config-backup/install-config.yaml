@@ -38,7 +38,7 @@ platform:
         datacenter: $DATACENTER
         datastore: /$DATACENTER/datastore/$VMWARE_DATASTORE_NAME
         networks:
-        - segment-sandbox-qgp9x
+        - $VM_NETWORK_SEGMENT
         resourcePool: /$DATACENTER/host/$VMWARE_CLUSTER_ID//Resources
         folder: /$DATACENTER/vm/$VM_DIR_NAME/$VM_FOLDER_NAME
       zone: generated-zone
@@ -52,6 +52,6 @@ platform:
       server: $VCENTER
       user: $VC_USER_NAME
 publish: External
-pullSecret: 'REDACTED*'
+pullSecret: '*REDACTED*'
 sshKey: |
   *REDACTED*
