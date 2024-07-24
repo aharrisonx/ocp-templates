@@ -2,23 +2,23 @@ apiVersion: machine.openshift.io/v1beta1
 kind: MachineSet
 metadata:
   annotations:
-  name: {$CLUSTERNAME}-{$CLUSTERID}-metal-worker-us-east-2c
+  name: $CLUSTERID-metal-worker-us-east-2c
   namespace: openshift-machine-api
   labels:
-    machine.openshift.io/cluster-api-cluster: {$CLUSTERID}
+    machine.openshift.io/cluster-api-cluster: $CLUSTERID
 spec:
   replicas: 0
   selector:
     matchLabels:
-      machine.openshift.io/cluster-api-cluster: {$CLUSTERID}
-      machine.openshift.io/cluster-api-machineset: {$CLUSTERNAME}-{$CLUSTERID}-metal-worker-us-east-2c
+      machine.openshift.io/cluster-api-cluster: $CLUSTERID
+      machine.openshift.io/cluster-api-machineset: $CLUSTERID-metal-worker-us-east-2c
   template:
     metadata:
       labels:
-        machine.openshift.io/cluster-api-cluster: {$CLUSTERID}
+        machine.openshift.io/cluster-api-cluster: $CLUSTERID
         machine.openshift.io/cluster-api-machine-role: worker
         machine.openshift.io/cluster-api-machine-type: worker
-        machine.openshift.io/cluster-api-machineset: {$CLUSTERNAME}-{$CLUSTERID}-metal-worker-us-east-2c
+        machine.openshift.io/cluster-api-machineset: $CLUSTERID-metal-worker-us-east-2c
     spec:
       lifecycleHooks: {}
       metadata: {}
@@ -46,11 +46,11 @@ spec:
             - filters:
                 - name: 'tag:Name'
                   values:
-                    - {$CLUSTERNAME}-{$CLUSTERID}-worker-sg
+                    - $CLUSTERID-worker-sg
           kind: AWSMachineProviderConfig
           metadataServiceOptions: {}
           tags:
-            - name: kubernetes.io/cluster/{$CLUSTERID}
+            - name: kubernetes.io/cluster/$CLUSTERID
               value: owned
           deviceIndex: 0
           ami:
@@ -59,7 +59,7 @@ spec:
             filters:
               - name: 'tag:Name'
                 values:
-                  - {$CLUSTERNAME}-{$CLUSTERID}-private-us-east-2c
+                  - $CLUSTERID-private-us-east-2c
           apiVersion: machine.openshift.io/v1beta1
           iamInstanceProfile:
-            id: {$CLUSTERNAME}-{$CLUSTERID}-worker-profile
+            id: $CLUSTERID-worker-profile
