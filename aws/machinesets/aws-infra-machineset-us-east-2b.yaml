@@ -19,8 +19,8 @@ spec:
     metadata:
       labels:
         machine.openshift.io/cluster-api-cluster: $CLUSTERID
-        machine.openshift.io/cluster-api-machine-role: infra
-        machine.openshift.io/cluster-api-machine-type: infra
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
         machine.openshift.io/cluster-api-machineset: $CLUSTERID-infra-us-east-2b
     spec:
       metadata: 
