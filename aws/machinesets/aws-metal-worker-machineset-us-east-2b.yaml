@@ -2,23 +2,23 @@ apiVersion: machine.openshift.io/v1beta1
 kind: MachineSet
 metadata:
   annotations:
-  name: {$CLUSTERNAME}-{$CLUSTERID}-metal-worker-us-east-2b
+  name: $CLUSTERID-metal-worker-us-east-2b
   namespace: openshift-machine-api
   labels:
-    machine.openshift.io/cluster-api-cluster: {$CLUSTERID}
+    machine.openshift.io/cluster-api-cluster: $CLUSTERID
 spec:
   replicas: 0
   selector:
     matchLabels:
-      machine.openshift.io/cluster-api-cluster: {$CLUSTERID}
-      machine.openshift.io/cluster-api-machineset: {$CLUSTERNAME}-{$CLUSTERID}-metal-worker-us-east-2b
+      machine.openshift.io/cluster-api-cluster: $CLUSTERID
+      machine.openshift.io/cluster-api-machineset: $CLUSTERID-metal-worker-us-east-2b
   template:
     metadata:
       labels:
-        machine.openshift.io/cluster-api-cluster: {$CLUSTERID}
+        machine.openshift.io/cluster-api-cluster: $CLUSTERID
         machine.openshift.io/cluster-api-machine-role: worker
         machine.openshift.io/cluster-api-machine-type: worker
-        machine.openshift.io/cluster-api-machineset: {$CLUSTERNAME}-{$CLUSTERID}-metal-worker-us-east-2b
+        machine.openshift.io/cluster-api-machineset: $CLUSTERID-metal-worker-us-east-2b
     spec:
       lifecycleHooks: {}
       metadata: {}
@@ -46,7 +46,7 @@ spec:
             - filters:
                 - name: 'tag:Name'
                   values:
-                    - {$CLUSTERNAME}-{$CLUSTERID}-worker-sg
+                    - $CLUSTERID-worker-sg
           kind: AWSMachineProviderConfig
           metadataServiceOptions: {}
           tags:
@@ -59,7 +59,7 @@ spec:
             filters:
               - name: 'tag:Name'
                 values:
-                  - {$CLUSTERNAME}-{$CLUSTERID}-private-us-east-2b
+                  - $CLUSTERID-private-us-east-2b
           apiVersion: machine.openshift.io/v1beta1
           iamInstanceProfile:
-            id: {$CLUSTERNAME}-{$CLUSTERID}-worker-profile
+            id: $CLUSTERID-worker-profile
