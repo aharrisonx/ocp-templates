@@ -40,7 +40,7 @@ spec:
                 iops: 0
                 kmsKey:
                   arn: ''
-                volumeSize: 120
+                volumeSize: 300
                 volumeType: gp3
           securityGroups:
             - filters:
