@@ -1,7 +1,7 @@
 apiVersion: policy.open-cluster-management.io/v1
 kind: Policy
 metadata:
-  name: "policy-oadp-operator"
+  name: "policy-oadp-operator-fips"
   namespace: secure-site-policies
 spec:
   disabled: false
