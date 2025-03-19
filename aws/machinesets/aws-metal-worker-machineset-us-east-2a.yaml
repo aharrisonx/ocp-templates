@@ -46,7 +46,10 @@ spec:
             - filters:
                 - name: 'tag:Name'
                   values:
-                    - $CLUSTERID-worker-sg
+                    - $CLUSTERID-node
+            - filters:    
+                - name: 'tag:Name'
+                  values: $CLUSTERID-lb
           kind: AWSMachineProviderConfig
           metadataServiceOptions: {}
           tags:
@@ -59,7 +62,7 @@ spec:
             filters:
               - name: 'tag:Name'
                 values:
-                  - $CLUSTERID-private-us-east-2a
+                  - $CLUSTERID-subnet-private-us-east-2a
           apiVersion: machine.openshift.io/v1beta1
           iamInstanceProfile:
             id: $CLUSTERID-worker-profile
