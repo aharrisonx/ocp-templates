@@ -54,7 +54,7 @@ spec:
           kind: AWSMachineProviderConfig
           metadataServiceOptions: {}
           tags:
-            - name: kubernetes.io/cluster/{$CLUSTERID}
+            - name: kubernetes.io/cluster/$CLUSTERID
               value: owned
           deviceIndex: 0
           ami:
