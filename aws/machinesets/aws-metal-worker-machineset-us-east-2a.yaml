@@ -49,7 +49,8 @@ spec:
                     - $CLUSTERID-node
             - filters:    
                 - name: 'tag:Name'
-                  values: $CLUSTERID-lb
+                  values:
+                    - $CLUSTERID-lb
           kind: AWSMachineProviderConfig
           metadataServiceOptions: {}
           tags:
