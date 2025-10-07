@@ -16,4 +16,9 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: default-policies
+  name: vm-policies
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: container-policies
