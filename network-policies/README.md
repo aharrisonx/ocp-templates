@@ -1,9 +1,10 @@
 # Network Policies
 
-## Examples of Network Policies for OpenShift 4.x easier
+## Examples of Network Policies for OpenShift 4.x
 
-## Important info about openshift-ingress on VMware/OpenStack
-If you are using HostNetwork for your ingress controllers, you must add a label to the default namespace in order for the `allow-from-openshift-ingress.yaml` policy to work properly
+## Important information about OpenShift ingress on VMware/OpenStack
+If you are using the HostNetwork option for your ingress controllers, add the following label to the `default` namespace so that the `allow-from-openshift-ingress.yaml` policy works properly:
+
 ```
 oc label namespace default network.openshift.io/policy-group=ingress
 ```
