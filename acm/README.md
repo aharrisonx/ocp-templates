@@ -6,7 +6,7 @@ This repo currently uses AWS as the infrastructure platform.  In order to be abl
 - [Stand up Multicluster Observability](https://github.com/aharrisonx/ocp-templates/tree/main/acm/mcobs)
 - [Create 2 spoke clusters](https://github.com/aharrisonx/ocp-templates/tree/main/acm/spoke)
 - [Import 1 spoke cluster](https://github.com/aharrisonx/ocp-templates/tree/main/acm/spoke)
-- [Apply 4 policies](https://github.com/aharrisonx/ocp-templates/tree/main/acm/policies)
+- [Apply multiple policies](https://github.com/aharrisonx/ocp-templates/tree/main/acm/policies)
 - [Deploy 1 app](https://github.com/aharrisonx/ocp-templates/tree/main/acm/apps)
 - [Deploy Day 2 configs](https://github.com/aharrisonx/ocp-templates/tree/main/acm/day2)
 
