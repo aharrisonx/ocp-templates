@@ -52,6 +52,6 @@ platform:
       server: $VCENTER
       user: $VC_USER_NAME
 publish: External
-pullSecret: '*REDACTED*'
+pullSecret: 'REDACTED'
 sshKey: |
-  *REDACTED*
+  REDACTED
