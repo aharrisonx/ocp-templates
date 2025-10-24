@@ -12,7 +12,7 @@ stringData:
   aws_secret_access_key: REDACTED
   baseDomain: foo.com
   pullSecret: >
-    *REDACTED*
+    REDACTED
   ssh-privatekey: |
     -----BEGIN OPENSSH PRIVATE KEY-----
     
