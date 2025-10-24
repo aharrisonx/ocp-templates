@@ -18,7 +18,7 @@ stringData:
     
     -----END OPENSSH PRIVATE KEY-----
   ssh-publickey: >
-    *REDACTED*
+    REDACTED
   httpProxy: ""
   httpsProxy: ""
   noProxy: ""
