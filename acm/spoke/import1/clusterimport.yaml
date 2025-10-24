@@ -24,7 +24,7 @@ metadata:
   namespace: demo-import-cluster
 stringData:
   autoImportRetry: "2"
-  token: *REDACTED*
+  token: REDACTED
   server: $CLUSTER_API_ADDRESS
 type: Opaque
 ---
