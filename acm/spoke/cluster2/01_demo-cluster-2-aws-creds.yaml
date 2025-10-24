@@ -5,5 +5,5 @@ metadata:
   name: demo-cluster-2-aws-creds
   namespace: 'demo-cluster-2'
 stringData:
-  aws_access_key_id: *REDACTED*
-  aws_secret_access_key: *REDACTED*
+  aws_access_key_id: REDACTED
+  aws_secret_access_key: REDACTED
