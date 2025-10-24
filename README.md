@@ -8,3 +8,12 @@ Clone the repo into your local system using SSH or HTTPS
 git clone https://github.com/aharrisonx/ocp-templates.git
 ```
 
+
+## Testing
+
+Run YAML validation locally before submitting changes:
+
+```
+pip install pyyaml
+make test
+```
