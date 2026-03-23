@@ -53,3 +53,4 @@ subjects:
   - name: aap-policy
     apiGroup: policy.open-cluster-management.io
     kind: Policy
+---
