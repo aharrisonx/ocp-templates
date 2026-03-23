@@ -1,0 +1,54 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: web-terminal-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: web-terminal-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: web-terminal
+            channel: fast
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "1.11.0"
+            - "1.11.1"
+            - "1.12.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: web-terminal-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: web-terminal-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: web-terminal-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: web-terminal-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
