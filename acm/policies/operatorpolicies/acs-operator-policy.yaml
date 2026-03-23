@@ -37,7 +37,7 @@ spec:
         labelSelector:
           matchExpressions:
             - {key: argocd-agent, operator: Exists}
-            - {key: local-cluster, operator: DoesNotExist}
+            - {key: local-cluster, operator: Exists}
 ---
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
