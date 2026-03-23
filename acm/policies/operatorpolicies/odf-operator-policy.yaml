@@ -1,0 +1,56 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: odf-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: odf-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: odf-operator
+            channel: stable-4.16
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.16.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: odf-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: Exists}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: odf-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: odf-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: odf-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
