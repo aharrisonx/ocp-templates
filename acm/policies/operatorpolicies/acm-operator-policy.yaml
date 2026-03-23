@@ -18,13 +18,13 @@ spec:
           complianceType: musthave
           subscription:
             name: advanced-cluster-management
+            namespace: open-cluster-management
             channel: release-2.15
             source: redhat-operators
             sourceNamespace: openshift-marketplace
           versions:
             - "2.15.0"
             - "2.15.1"
-            - "2.15.2"
           upgradeApproval: Automatic
 ---
 apiVersion: cluster.open-cluster-management.io/v1beta1
