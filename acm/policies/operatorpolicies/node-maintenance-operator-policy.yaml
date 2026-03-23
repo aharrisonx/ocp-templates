@@ -1,0 +1,55 @@
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: node-maintenance-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: node-maintenance-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: node-maintenance-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.17.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: node-maintenance-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: node-maintenance-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: node-maintenance-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: node-maintenance-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
