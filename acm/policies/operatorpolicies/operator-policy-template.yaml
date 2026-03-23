@@ -1,0 +1,934 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: acm-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: acm-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: advanced-cluster-management
+            channel: release-2.15
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "2.15.0"
+            - "2.15.1"
+            - "2.15.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: acm-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: acm-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: acm-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: acm-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: acs-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: acs-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: rhacs-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.6.0"
+            - "4.6.1"
+            - "4.6.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: acs-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: acs-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: acs-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: acs-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: aap-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: aap-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: ansible-automation-platform-operator
+            channel: stable-2.5
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "2.5.0"
+            - "2.5.1"
+            - "2.5.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: aap-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: aap-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: aap-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: aap-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: compliance-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: compliance-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: compliance-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "1.7.0"
+            - "1.7.1"
+            - "1.7.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: compliance-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: compliance-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: compliance-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: compliance-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: dell-csm-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: dell-csm-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: dell-csm-operator
+            channel: stable
+            source: certified-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "1.6.0"
+            - "1.6.1"
+            - "1.6.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: dell-csm-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: dell-csm-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: dell-csm-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: dell-csm-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: descheduler-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: descheduler-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: cluster-descheduler-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.17.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: descheduler-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: descheduler-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: descheduler-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: descheduler-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: local-storage-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: local-storage-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: local-storage-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.17.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: local-storage-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: local-storage-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: local-storage-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: local-storage-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: mtv-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: mtv-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: mtv-operator
+            channel: release-v2.6
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "2.6.0"
+            - "2.6.1"
+            - "2.6.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: mtv-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: mtv-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: mtv-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: mtv-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: nmstate-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: nmstate-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: kubernetes-nmstate-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.17.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: nmstate-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: nmstate-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: nmstate-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: nmstate-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: node-feature-discovery-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: node-feature-discovery-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: nfd
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.17.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: node-feature-discovery-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: node-feature-discovery-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: node-feature-discovery-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: node-feature-discovery-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: node-fence-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: node-fence-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: node-fencing-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "0.3.0"
+            - "0.3.1"
+            - "0.3.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: node-fence-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: node-fence-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: node-fence-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: node-fence-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: node-health-check-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: node-health-check-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: node-healthcheck-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "0.8.0"
+            - "0.8.1"
+            - "0.8.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: node-health-check-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: node-health-check-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: node-health-check-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: node-health-check-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: node-maintenance-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: node-maintenance-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: node-maintenance-operator
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.17.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: node-maintenance-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: node-maintenance-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: node-maintenance-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: node-maintenance-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: odf-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: odf-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: odf-operator
+            channel: stable-4.16
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.16.2"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: odf-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: odf-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: odf-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: odf-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: osv-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: osv-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: kubevirt-hyperconverged
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "4.16.0"
+            - "4.16.1"
+            - "4.17.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: osv-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: osv-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: osv-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: osv-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: redhat-otel-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: redhat-otel-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: opentelemetry-product
+            channel: stable
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "0.100.0"
+            - "0.101.0"
+            - "0.102.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: redhat-otel-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: redhat-otel-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: redhat-otel-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: redhat-otel-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: web-terminal-policy
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: web-terminal-operator-policy
+        spec:
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: web-terminal
+            channel: fast
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+          versions:
+            - "1.11.0"
+            - "1.11.1"
+            - "1.12.0"
+          upgradeApproval: Automatic
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: web-terminal-placement
+  namespace: open-cluster-management-global-set
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - {key: argocd-agent, operator: Exists}
+            - {key: local-cluster, operator: DoesNotExist}
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: web-terminal-placement-binding
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: web-terminal-placement
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+subjects:
+  - name: web-terminal-policy
+    apiGroup: policy.open-cluster-management.io
+    kind: Policy
