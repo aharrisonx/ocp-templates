@@ -1,0 +1,120 @@
+apiVersion: compliance.openshift.io/v1alpha1
+kind: ComplianceSuite
+metadata:
+  finalizers:
+  - suite.finalizers.compliance.openshift.io
+  name: e8
+  namespace: openshift-compliance
+spec:
+  scans:
+  - content: ssg-ocp4-ds.xml
+    contentImage: registry.redhat.io/compliance/openshift-compliance-content-rhel8@sha256:99fa315d40b3fbd82ec593054abb466f67685cd337170ab8f014fc68ffb68e8e
+    maxRetryOnTimeout: 3
+    name: ocp4-e8
+    profile: xccdf_org.ssgproject.content_profile_e8
+    rawResultStorage:
+      enabled: true
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      pvAccessModes:
+      - ReadWriteOnce
+      rotation: 3
+      size: 1Gi
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 300
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 300
+      - effect: NoSchedule
+        key: node.kubernetes.io/memory-pressure
+        operator: Exists
+    scanTolerations:
+    - operator: Exists
+    scanType: Platform
+    scannerType: OpenSCAP
+    showNotApplicable: false
+    strictNodeScan: true
+    timeout: 30m
+  - content: ssg-rhcos4-ds.xml
+    contentImage: registry.redhat.io/compliance/openshift-compliance-content-rhel8@sha256:99fa315d40b3fbd82ec593054abb466f67685cd337170ab8f014fc68ffb68e8e
+    maxRetryOnTimeout: 3
+    name: rhcos4-e8-master
+    nodeSelector:
+      node-role.kubernetes.io/master: ""
+    profile: xccdf_org.ssgproject.content_profile_e8
+    rawResultStorage:
+      enabled: true
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      pvAccessModes:
+      - ReadWriteOnce
+      rotation: 3
+      size: 1Gi
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 300
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 300
+      - effect: NoSchedule
+        key: node.kubernetes.io/memory-pressure
+        operator: Exists
+    scanTolerations:
+    - operator: Exists
+    scanType: Node
+    scannerType: OpenSCAP
+    showNotApplicable: false
+    strictNodeScan: true
+    timeout: 30m
+  - content: ssg-rhcos4-ds.xml
+    contentImage: registry.redhat.io/compliance/openshift-compliance-content-rhel8@sha256:99fa315d40b3fbd82ec593054abb466f67685cd337170ab8f014fc68ffb68e8e
+    maxRetryOnTimeout: 3
+    name: rhcos4-e8-worker
+    nodeSelector:
+      node-role.kubernetes.io/worker: ""
+    profile: xccdf_org.ssgproject.content_profile_e8
+    rawResultStorage:
+      enabled: true
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      pvAccessModes:
+      - ReadWriteOnce
+      rotation: 3
+      size: 1Gi
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+        tolerationSeconds: 300
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 300
+      - effect: NoSchedule
+        key: node.kubernetes.io/memory-pressure
+        operator: Exists
+    scanTolerations:
+    - operator: Exists
+    scanType: Node
+    scannerType: OpenSCAP
+    showNotApplicable: false
+    strictNodeScan: true
+    timeout: 30m
+  schedule: 0 1 * * *
+  suspend: false
