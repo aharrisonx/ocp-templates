@@ -1,0 +1,21 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/web-terminal-operator/
+
+patches:
+  - target:
+      kind: OperatorPolicy
+      name: web-terminal-policy
+    patch: |
+      - op: replace
+        path: /spec/subscription/channel
+        value: fast  
+      - op: add
+        path: /spec/versions/-
+        value: "web-terminal.v1.13.0"
+      - op: add
+        path: /spec/versions/-
+        value: "web-terminal.v1.14.0"  

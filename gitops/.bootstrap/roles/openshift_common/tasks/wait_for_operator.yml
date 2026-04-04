@@ -1,0 +1,49 @@
+- name: Retrieve subscription {{ subscription_namespace }}/{{ subscription_name }}
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: '{{ subscription_name }}'
+    namespace: '{{ subscription_namespace }}'
+  register: operator_subscription
+  until:
+    - operator_subscription.resources.0.status is defined
+  retries: 60
+  delay: 10
+
+# - pause:
+#     seconds: 600
+#     prompt: >-
+#       The install plan for the {{ subscription_namespace }}/{{ subscription_name }} subscription must be approved manually.
+#       Please, approve the install plan. After that, press Ctrl+C followed by 'C' to continue.
+#   when:
+#     - operator_subscription.resources.0.spec.installPlanApproval is defined
+#     - operator_subscription.resources.0.spec.installPlanApproval == 'Manual'
+#     - operator_subscription.resources.0.status.installedCSV is not defined
+
+- name: Waiting since {{ lookup("pipe", "date +%r") }} for subscription {{ subscription_namespace }}/{{ subscription_name }} to deploy
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: '{{ subscription_name }}'
+    namespace: '{{ subscription_namespace }}'
+  register: operator_subscription
+  until:
+    - operator_subscription.resources.0.status.installedCSV is defined
+  retries: 60
+  delay: 10
+
+- name: Waiting since {{ lookup("pipe", "date +%r") }} for the csv {{ subscription_namespace }}/{{ operator_subscription.resources.0.status.installedCSV }} to deploy
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: '{{ operator_subscription.resources.0.status.installedCSV }}'
+    namespace: '{{ subscription_namespace }}'
+  register: operator_csv
+  until:
+    - operator_csv.resources.0.status.phase is defined
+    - operator_csv.resources.0.status.phase == 'Succeeded'
+  retries: 60
+  delay: 10
+
+- debug:
+    msg: Installed operator {{ operator_subscription.resources.0.status.installedCSV }}

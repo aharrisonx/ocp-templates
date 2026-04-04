@@ -1,0 +1,19 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: argocd-agent-deployment
+placementBindingDefaults:
+  name: argocd-agent-deployment
+policyDefaults:
+  namespace: open-cluster-management-global-set
+  remediationAction: enforce
+  complianceType: "mustonlyhave"
+policies:
+  - name: argocd-agent-deployment
+    description: Argo CD Agent
+    hubTemplateOptions:
+      serviceAccountName: argocd-agent-policy
+    manifests:
+      - path: manifests/
+    placement:
+      placementName: argocd-agent-deployment

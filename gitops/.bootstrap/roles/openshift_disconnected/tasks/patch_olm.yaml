@@ -1,0 +1,8 @@
+- name: Disable built-in catalog sources
+  kubernetes.core.k8s_json_patch:
+    kind: OperatorHub
+    name: cluster
+    patch:
+      - op: add
+        path: /spec/disableAllDefaultSources
+        value: true

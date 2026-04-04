@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/external-secrets-operator/
+
+patches:
+  - target:
+      kind: OperatorPolicy
+      name: external-secrets-operator-policy
+    patch: |
+      - op: replace
+        path: /spec/subscription/channel
+        value: stable-v1
+      - op: add
+        path: /spec/versions/-
+        value: "openshift-external-secrets-operator.v1.1.0"

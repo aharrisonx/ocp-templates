@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: argocd-agent
+
+# argocd-agent-chart.yaml is pre-rendered from:
+#   helm template argocd-agent redhat-argocd-agent \
+#     --version 0.5.4 --repo https://charts.openshift.io \
+#     --namespace argocd-agent --set fullnameOverride=argocd-agent \
+#     -f values.yaml
+# Re-render when upgrading the chart version or changing values.yaml
+
+resources:
+  - namespace.yaml
+  - argocd.yaml
+  - argocd-agent-chart.yaml
+  - argocd-agent-cluster-admin-role.yaml
+  - application-controller-cluster-admin-role.yaml
+  - agent-redis-networkpolicy.yaml
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/server/enabled
+        value: false
+    target:
+      kind: ArgoCD

@@ -1,0 +1,44 @@
+applications:
+
+  dell-csm-configuration:
+     annotations:
+       argocd.argoproj.io/compare-options: IgnoreExtraneous
+       argocd.argoproj.io/sync-wave: '15'
+     destination:
+       namespace: openshift-operators
+     source:
+       path: components/dell-csm-config
+
+  # oadp-configuration:
+  #    annotations:
+  #      argocd.argoproj.io/compare-options: IgnoreExtraneous
+  #      argocd.argoproj.io/sync-wave: '15'
+  #    destination:
+  #      namespace: openshift-operators
+  #    source:
+  #      path: components/oadp-configuration
+
+  cohesity-configuration:
+     annotations:
+       argocd.argoproj.io/compare-options: IgnoreExtraneous
+       argocd.argoproj.io/sync-wave: '15'
+     destination:
+       namespace: cohesity
+     source:
+       path: components/cohesity-configuration
+  
+  nad-localnet:
+      annotations:
+        argocd.argoproj.io/compare-options: IgnoreExtraneous
+        argocd.argoproj.io/sync-wave: '20'
+      destination:
+        namespace: default
+      source:
+        path: groups/spoke-clusters/overlays/nad-localnet
+
+  nncp-compute-bond0-vlan-interface:
+      annotations:
+        argocd.argoproj.io/compare-options: IgnoreExtraneous
+        argocd.argoproj.io/sync-wave: '20'
+      source:
+        path: groups/spoke-clusters/overlays/nncp-compute-bond0-vlan-interface

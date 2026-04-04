@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: argocd
+
+components:
+- ../../../components/alert-rules
+#- ../../../components/action-compliance
+#- ../../../components/extension-assistant-lightspeed
+#- ../../../components/oidc-keycloak-ocplab
+- ../../../components/agent-principal
+- ../../../components/policy-generator
+- ../../../components/setenv-plugin
+
+resources:
+- ../../../base
+# AppSets in Any Namespace require more permissions then what operator gives
+# since it is not supported yet.
+- appset-in-any-namespace-clusterrole.yaml
+- console-link.yaml

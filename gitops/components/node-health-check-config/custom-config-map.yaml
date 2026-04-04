@@ -1,0 +1,60 @@
+apiVersion: v1
+data: 
+  ontap-san-test.json: |
+    {
+      "plugin": "custom",
+      "pluginConfig": {
+        "invoke_interval": "15s",
+        "timeout": "3s",
+        "max_output_length": 80,
+        "concurrency": 3,
+        "enable_message_change_based_condition_update": true
+      },
+      "source": "ontap-san-custom-plugin-monitor",
+      "metricsReporting": true,
+      "conditions": [
+        {
+          "type": "OntapSANProblem",
+          "reason": "OntapSANIsUp",
+          "message": "Ontap-san connection service is up"
+        }
+      ],
+      "rules": [
+        {
+          "type": "permanent",
+          "condition": "OntapSANProblem",
+          "reason": "OntapSANIsDown",
+          "path": "./custom-config/ontap-check.sh",
+          "timeout": "3s"
+        }
+      ]
+    }
+  ontap-check.sh: |
+    #!/bin/bash
+
+    # This plugin checks if the ntp service is running under systemd.
+    # NOTE: This is only an example for systemd services.
+
+    readonly OK=0
+    readonly NONOK=1
+    readonly UNKNOWN=2
+
+    # Return success if we can read data from the block device
+    # if timeout -k 2s -s 9 1s dd iflag=direct if=/dev/ontap-san-test bs=4096 count=1 of=/dev/null; then
+    # if dd iflag=direct,nonblock if=/dev/ontap-san-test bs=4096 count=1 of=/dev/null; then
+    # if sg_read if=/dev/ontap-san-test bs=4096 count=1 time=2 blk_sgio=1; then
+    export device=$(chroot /node-root multipath -ll | grep "NETAPP,LUN" | awk '{print $2}' | shuf | head -n 1)
+    if chroot /node-root multipath -C $device; then
+      echo "ontap-san-test is accessible"
+      exit $OK
+    else
+      echo "ontap-san-test is NOT accessible"
+      exit $NONOK
+    fi  
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: node-problem-detector
+    app.kubernetes.io/name: node-problem-detector
+  name: node-problem-detector-custom-config
+  namespace: openshift-workload-availability

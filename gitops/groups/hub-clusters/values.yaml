@@ -1,0 +1,75 @@
+applications:
+
+# Storage
+
+  local-storage-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-local-storage
+    source:
+      path: components/local-storage-configuration
+
+  odf-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-local-storage
+    source:
+      path: components/odf-configuration
+
+  acm-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: open-cluster-management
+    source:
+      path: components/acm-configuration
+
+  openshift-gitops-operator-acm-policy:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: open-cluster-management-global-set
+    source:
+      path: components/openshift-gitops-operator
+      
+  openshift-gitops-acm-policy:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: open-cluster-management-global-set
+    source:
+      path: components/openshift-gitops/overlays/hub
+  
+  aap-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: aap
+    source:
+      path: components/aap-configuration
+
+  # acm-observability:
+  #   annotations:
+  #     argocd.argoproj.io/compare-options: IgnoreExtraneous
+  #     argocd.argoproj.io/sync-wave: '15'
+  #   destination:
+  #     namespace: open-cluster-management-observability
+  #   source:
+  #     path: components/acm-observability
+  
+  mtv-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-mtv
+    source:
+      path: components/mtv-configuration

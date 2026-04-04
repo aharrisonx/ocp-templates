@@ -1,0 +1,29 @@
+apiVersion: operator.openshift.io/v1
+kind: IngressController
+metadata:
+  finalizers:
+  - ingresscontroller.operator.openshift.io/finalizer-ingresscontroller
+  name: default
+  namespace: openshift-ingress-operator
+  uid: 177dbfe9-5743-4bce-9e79-ec98d5bb7bbd
+spec:
+  defaultCertificate:
+    name: cert-manager-wildcard-cert-secret
+  clientTLS:
+    clientCA:
+      name: ""
+    clientCertificatePolicy: ""
+  closedClientConnectionPolicy: Continue
+  httpCompression: {}
+  httpEmptyRequestsPolicy: Respond
+  httpErrorCodePages:
+    name: ""
+  idleConnectionTerminationPolicy: Immediate
+  replicas: 2
+  routeSelector:
+    matchExpressions:
+    - key: hypershift.openshift.io/hosted-control-plane
+      operator: DoesNotExist
+  tuningOptions:
+    reloadInterval: 0s
+  unsupportedConfigOverrides: null

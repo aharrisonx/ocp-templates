@@ -1,0 +1,53 @@
+- name: Retrieve Hub CA Certificate
+  kubernetes.core.k8s_info:
+    kind: Secret
+    name: argocd-agent-ca
+    namespace: "{{ gitops_instance_namespace }}"
+  register: hub_ca_output
+  until:
+    - hub_ca_output.resources | length > 0
+  retries: 5
+  delay: 1
+
+- name: Set secret data as a fact for easy access
+  ansible.builtin.set_fact:
+    hub_ca: "{{ hub_ca_output.resources[0] }}"
+
+- name: Retrieve Spoke Agent Certificate
+  kubernetes.core.k8s_info:
+    kind: Secret
+    name: argocd-agent-{{ ocp_preferred_cluster_name }}
+    namespace: "{{ gitops_instance_namespace }}"
+  register: hub_client_tls_output
+  until:
+    - hub_client_tls_output.resources | length > 0
+  retries: 5
+  delay: 1
+
+- name: Set secret data as a fact for easy access
+  ansible.builtin.set_fact:
+    hub_client_tls: "{{ hub_client_tls_output.resources[0] }}"
+
+- name: Configure ArgoCD Spoke Agent Instance
+  kubernetes.core.k8s:
+    template: 
+      - argocd-agent/namespace.yaml
+      - argocd-agent/application-controller-cluster-admin-role.yaml
+      - argocd-agent/argocd-agent-ca.yaml
+      - argocd-agent/argocd-agent-client-tls.yaml
+      - argocd-agent/argocd-agent-cluster-admin-role.yaml
+      - argocd-agent/argocd.yaml
+      - argocd-agent/repo-secret.yaml
+
+- name: Waiting since {{ lookup("pipe", "date +%r") }} for {{ gitops_instance_name }} deployment to complete
+  kubernetes.core.k8s_info:
+    api_version: argoproj.io/v1alpha1
+    kind: ArgoCD
+    namespace: '{{ gitops_agent_namespace }}'
+    name: '{{ gitops_instance_name }}'
+  register: argocd_instance
+  until:
+    - argocd_instance.resources.0.status.phase is defined
+    - argocd_instance.resources.0.status.phase == 'Available'
+  retries: 30
+  delay: 10

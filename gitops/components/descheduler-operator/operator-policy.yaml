@@ -1,0 +1,24 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: descheduler-operator-policy
+  namespace: open-cluster-management-policies
+spec:
+  complianceType: musthave
+  remediationAction: enforce
+  severity: critical
+  operatorGroup:
+    name: openshift-kube-descheduler-operator
+    namespace: openshift-kube-descheduler-operator
+    targetNamespaces:
+      - openshift-kube-descheduler-operator
+  subscription:
+    channel: stable
+    name: cluster-kube-descheduler-operator
+    namespace: openshift-kube-descheduler-operator
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: clusterkubedescheduleroperator.v5.3.2
+  versions: []
+  upgradeApproval: Automatic

@@ -1,0 +1,39 @@
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: openshift-cert-manager-operator
+  namespace: open-cluster-management-policies
+spec:
+  disabled: True
+  upgradeApproval: Automatic
+  complianceConfig:
+    catalogSourceUnhealthy: Compliant
+    deploymentsUnavailable: NonCompliant
+    upgradesAvailable: Compliant
+  complianceType: musthave
+  remediationAction: enforce
+  removalBehavior:
+    clusterServiceVersions: Delete
+    customResourceDefinitions: Keep
+    operatorGroups: DeleteIfUnused
+    subscriptions: Delete
+  severity: critical
+  operatorGroup: # optional
+    name: openshift-cert-manager-operator
+    namespace: cert-manager
+    targetNamespaces:
+        - cert-manager
+  subscription:
+    channel: stable-v1
+    name: openshift-cert-manager-operator
+    namespace: cert-manager
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: cert-manager-operator.v1.15.0
+  versions: 
+    - cert-manager-operator.v1.18.0
+    - cert-manager-operator.v1.17.0
+    - cert-manager-operator.v1.16.1
+    - cert-manager-operator.v1.16.0
+    - cert-manager-operator.v1.15.0
+    - cert-manager-operator.v1.15.1

@@ -1,0 +1,3 @@
+- import_tasks: install_mirror_assets.yaml
+
+- import_tasks: patch_olm.yaml

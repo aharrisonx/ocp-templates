@@ -1,0 +1,3 @@
+- import_tasks: hub_deploy_subtasks.yml
+
+- import_tasks: hub_report_success.yml

@@ -1,0 +1,26 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: odf-operator-policy
+  namespace: open-cluster-management-policies
+spec:
+  remediationAction: enforce
+  complianceType: musthave
+  severity: critical
+  operatorGroup:
+    name: openshift-storage
+    namespace: openshift-storage
+    targetNamespaces:
+    - openshift-storage
+    upgradeStrategy: Default
+  subscription:
+    name: odf-operator
+    namespace: openshift-storage
+    channel: stable-4.20
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: odf-operator.v4.20.9-rhodf
+  versions: []
+  upgradeApproval: Automatic
+---

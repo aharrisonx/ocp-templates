@@ -1,0 +1,22 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: oadp-policy
+  namespace: open-cluster-management-policies
+spec:
+  remediationAction: enforce
+  complianceType: musthave
+  operatorGroup:
+    name: openshift-adp
+    namespace: openshift-adp
+    targetNamespaces:
+      - openshift-adp
+  subscription:
+    name: openshift-adp
+    channel: stable
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+  versions:
+    - "oadp-operator.v1.5.5"            
+  upgradeApproval: Automatic

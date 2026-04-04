@@ -1,0 +1,24 @@
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: install-operator
+spec:
+  complianceType: musthave
+  remediationAction: enforce
+  severity: critical
+  subscription:
+    channel: gitops-1.20
+    name: openshift-gitops-operator
+    namespace: openshift-gitops-operator
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    config:
+      env:
+      - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
+        value: 'openshift-gitops, argocd, argocd-agent'
+      - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
+        value: 'true'
+  upgradeApproval: Automatic
+  versions:
+    - openshift-gitops-operator.v1.20.1
+    - openshift-gitops-operator.v1.20.0

@@ -1,0 +1,45 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+- issuer.yaml
+- principal-cert.yaml
+- resource-proxy.yaml
+- argocd-agent-ca-certificate.yaml
+- argocd-agent-selfsigned-issuer.yaml
+- cluster-rolebinding.yaml
+
+patches:
+  - patch: |-
+      - op: add
+        path: /spec/argoCDAgent
+        value:
+          principal:
+            namespace:
+              allowedNamespaces:
+                - "argocd-agent-*"
+            enabled: true
+            image: 'quay.io/argoprojlabs/argocd-agent:v0.7.4'
+            jwt:
+              insecureGenerate: true
+            auth: mtls:CN=([^,]+)
+      - op: add
+        path: /spec/sourceNamespaces
+        value:
+          - "argocd-agent-*"
+      - op: add
+        path: /spec/controller/enabled
+        value: false
+      - op: remove
+        path: /spec/resourceExclusions
+      - op: replace
+        path: /spec/applicationSet/enabled
+        value: true
+      - op: add
+        path: /spec/applicationSet/extraCommandArgs
+        value:
+          - "--applicationset-namespaces"
+          - "argocd-agent-*"
+          - "--enable-scm-providers=false"
+    target:
+      kind: ArgoCD

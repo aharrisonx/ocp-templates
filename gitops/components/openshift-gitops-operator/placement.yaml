@@ -1,0 +1,32 @@
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: openshift-gitops-operator
+spec:
+  clusterSets:
+    - global
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - key: argocd-agent
+              operator: Exists
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - key: local-cluster
+              operator: Exists
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: openshift-gitops-operator
+  namespace: open-cluster-management-global-set
+placementRef:
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+  name: openshift-gitops-operator
+subjects:
+  - apiGroup: policy.open-cluster-management.io
+    kind: Policy
+    name: argocd-operator-policy

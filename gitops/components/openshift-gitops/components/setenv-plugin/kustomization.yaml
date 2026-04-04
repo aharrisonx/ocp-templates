@@ -1,0 +1,40 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+- setenv-cmp-plugin.yaml
+
+patches:
+  - patch: |
+      - op: add
+        path: /spec/repo/sidecarContainers
+        value:
+          - name: setenv-plugin
+            command: [/var/run/argocd/argocd-cmp-server]
+            envFrom:
+              - configMapRef:
+                  name: environment-variables
+            image: quay.io/raffaelespazzoli/raffa-envsub:1.1
+            imagePullPolicy: Always
+            securityContext:
+              runAsNonRoot: true
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              - mountPath: /tmp
+                name: tmp
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: plugin.yaml
+                name: setenv-cmp-plugin
+              - mountPath: /etc/kustomize/plugin/policy.open-cluster-management.io/v1/policygenerator
+                name: policy-generator
+      - op: add
+        path: /spec/repo/volumes/-
+        value:
+          configMap:
+            name: setenv-cmp-plugin
+          name: setenv-cmp-plugin
+    target:
+      kind: ArgoCD

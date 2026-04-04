@@ -1,0 +1,22 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/node-ntp-machine-config/
+  
+patches:
+  - target:
+      kind: MachineConfig
+      name: 99-master-chrony
+    patch: |
+      - op: replace
+        path: /spec/config/storage/files/0/contents/source
+        value: 'data:,pool%20tick.jobu.net%20iburst%20%0Adriftfile%20%2Fvar%2Flib%2Fchrony%2Fdrift%0Amakestep%201.0%203%0Artcsync%0Alogdir%20%2Fvar%2Flog%2Fchrony%0A'
+  - target:
+      kind: MachineConfig
+      name: 99-worker-chrony
+    patch: |
+      - op: replace
+        path: /spec/config/storage/files/0/contents/source
+        value: 'data:,pool%20tick.jobu.net%20iburst%20%0Adriftfile%20%2Fvar%2Flib%2Fchrony%2Fdrift%0Amakestep%201.0%203%0Artcsync%0Alogdir%20%2Fvar%2Flog%2Fchrony%0A'

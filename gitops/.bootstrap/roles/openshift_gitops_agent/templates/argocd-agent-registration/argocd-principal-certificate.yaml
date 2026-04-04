@@ -1,0 +1,17 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-principal-{{ ocp_preferred_cluster_name }}
+  namespace: "{{ gitops_instance_name }}"
+spec:
+  secretName: argocd-principal-{{ ocp_preferred_cluster_name }}
+  issuerRef:
+    name: argocd-agent-ca
+    kind: Issuer
+  commonName: argocd-agent-{{ ocp_preferred_cluster_name }}
+  subject:
+    organizationalUnits:
+      - "{{ ocp_base_domain }}"
+  dnsNames:
+  - argocd-agent-{{ ocp_preferred_cluster_name }}.{{ ocp_base_domain }}

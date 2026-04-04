@@ -1,0 +1,107 @@
+# provisioning config file
+apiVersion: metal3.io/v1alpha1
+kind: Provisioning
+metadata:
+  name: provisioning-configuration
+spec:
+  disableVirtualMediaTLS: false
+  preProvisioningOSDownloadURLs: {}
+  provisioningNetwork: Disabled
+  watchAllNamespaces: true
+---
+# agent-install config
+apiVersion: agent-install.openshift.io/v1beta1
+kind: AgentServiceConfig
+metadata:
+  name: agent
+spec:
+  databaseStorage:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 10Gi
+    storageClassName: ocs-storagecluster-ceph-rbd
+  filesystemStorage:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Gi
+    storageClassName: ocs-storagecluster-ceph-rbd
+  imageStorage:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 50Gi
+    storageClassName: ocs-storagecluster-ceph-rbd
+---
+
+#Managed Cluster Deployment
+1. Create new project
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: osv1
+---    
+created idrac-credentials secrets under name space "osv1"
+2. Create new secrets for iDRAC bmc
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: idrac-bmc-secret
+  namespace: osv1
+data:
+  username: 
+  password:
+type: Opaque
+---
+Create new environment
+*Select the cluster namespace: osv1
+Configure everything as follows:
+Network Type: Static
+CPU Architecture: x86_64
+Pull Secrets and SSH Keys and NTP: pool.ntp.org
+4. Create nmstateconfig for the master and worker nodes via import yaml
+5. create baremetal config file for all the nodes for idrac via import yaml
+
+# Now time to create actual a  Cluster via ACM under Infrastructure >> Clusters >> Create Cluster 
+# Select Host Inventory
+# Select Standalone
+# Use existing hosts
+# Cluster details:
+- Infrastructure provider credential: Nothing
+Cluster name:
+- osv1
+Cluster set: Nothing
+Base domain: 
+- ocp.jobu.net
+version:
+- Openshift 4.19.12-x86_64
+Number of control plane: 3
+cpu architecture: x86_64
+Additional labels: environment=nonprod
+pull secret:
+
+Next
+Automation Nothing
+
+Next
+Save
+
+Cluster Hosts:
+Disable: Auto-select Hosts
+Assign a Role to the Master nodes from the host views (3 control plane nodes)
+Assign a Role to the Worker nodes from the host views (4 workers)
+Select the nodes 
+Next
+
+Networking section:
+
+Network Management: User-Managed Networking
+Network type: OVN
+HOst ssh public Key: 
+Review and click next / install

@@ -1,0 +1,24 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: local-storage-operator-policy
+  namespace: open-cluster-management-policies
+spec:
+  complianceType: musthave
+  remediationAction: enforce
+  severity: critical
+  operatorGroup:
+    name: local-storage-operator-group
+    namespace: openshift-local-storage
+    targetNamespaces:
+      - openshift-local-storage
+  subscription:
+    channel: stable
+    name: local-storage-operator
+    namespace: openshift-local-storage
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: local-storage-operator.v4.20.0-202602032049
+  versions: []
+  upgradeApproval: Automatic

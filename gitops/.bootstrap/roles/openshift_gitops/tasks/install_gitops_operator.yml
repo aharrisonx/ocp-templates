@@ -1,0 +1,40 @@
+- name: Deploy GitOps operator
+  kubernetes.core.k8s:
+    template:
+    - operator/namespace.yaml
+    - operator/operatorgroup.yaml
+    - operator/openshift-gitops-sub.yaml
+
+- import_role:
+    name: openshift_common
+    tasks_from: install_plan_approve_subtasks.yml
+  vars:
+    subscription_name: '{{ gitops_subscription_name }}'
+    subscription_namespace: '{{ gitops_subscription_namespace }}'
+  when: gitops_subscription_approval == 'Manual'
+
+- import_role:
+    name: openshift_common
+    tasks_from: wait_for_operator.yml
+  vars:
+    subscription_name: '{{ gitops_subscription_name }}'
+    subscription_namespace: '{{ gitops_subscription_namespace }}'
+
+- name: Patch setenv plugin into default ArgoCD
+  kubernetes.core.k8s:
+    apply: true
+    template:
+      - instance/argocd.yaml
+
+- name: Waiting since {{ lookup("pipe", "date +%r") }} for {{ gitops_instance_name }} deployment to complete
+  kubernetes.core.k8s_info:
+    api_version: argoproj.io/v1alpha1
+    kind: ArgoCD
+    namespace: '{{ gitops_instance_namespace }}'
+    name: '{{ gitops_instance_name }}'
+  register: argocd_instance
+  until:
+    - argocd_instance.resources.0.status.phase is defined
+    - argocd_instance.resources.0.status.phase == 'Available'
+  retries: 30
+  delay: 10

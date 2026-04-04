@@ -1,0 +1,14 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-agent-ca
+  namespace: argocd
+spec:
+  isCA: true
+  commonName: argocd-agent-ca
+  secretName: argocd-agent-ca
+  duration: 87600h
+  issuerRef:
+    name: argocd-agent-selfsigned
+    kind: Issuer

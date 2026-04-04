@@ -1,0 +1,19 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: argocd-agent-registration
+placementBindingDefaults:
+  name: argocd-agent-registration
+policyDefaults:
+  complianceType: "mustonlyhave"
+  # Need to keep cluster-secrets in a different manifest for reconciliation
+  consolidateManifests: false
+  namespace: open-cluster-management-global-set
+  remediationAction: enforce
+policies:
+  - name: argocd-agent-registration
+    description: Register Argo CD Agents on Control Plane
+    manifests:
+      - path: manifests
+    placement:
+      placementName: argocd-agent-registration

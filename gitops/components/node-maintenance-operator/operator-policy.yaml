@@ -1,0 +1,24 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: node-maintenance-operator-policy
+  namespace: open-cluster-management-policies
+spec:
+  remediationAction: enforce
+  complianceType: musthave
+  severity: critical
+  # operatorGroup:
+  #   name: openshift-workload-availability
+  #   namespace: openshift-workload-availability
+  #   targetNamespaces:
+  #     - openshift-workload-availability
+  subscription:
+    name: node-maintenance-operator
+    namespace: openshift-workload-availability
+    channel: stable
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: node-maintenance-operator.v5.5.0
+  versions: []
+  upgradeApproval: Automatic

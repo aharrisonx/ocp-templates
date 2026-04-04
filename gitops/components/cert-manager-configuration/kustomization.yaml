@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./cert-manager-venafi-issuer.yaml
+  - ./cert-manager-venafi-wildcard-issuer.yaml
+  - ./cert-manager-venafi-api-cert.yaml
+  - ./cert-manager-venafi-wildcard-cert.yaml
+  

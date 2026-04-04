@@ -1,0 +1,16 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: gitops-subscription
+policyDefaults:
+  complianceType: "musthave"
+  namespace: open-cluster-management-global-set
+  remediationAction: enforce
+  generatePolicyPlacement: false
+policies:
+  - name: gitops-subscription
+    description: Install OpenShift GitOps operator on managed clusters
+    manifests:
+      - path: manifests/
+    placement:
+      placementName: gitops-subscription

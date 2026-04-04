@@ -1,0 +1,20 @@
+kind: ComplianceSuite
+apiVersion: compliance.openshift.io/v1alpha1
+metadata:
+  name: compliancesuite
+  namespace: openshift-compliance
+spec:
+  autoApplyRemediations: false
+  scans:
+    - content: ssg-rhcos4-ds.xml
+      contentImage: 'registry.redhat.io/compliance/openshift-compliance-rhel8-operator@sha256:5f8566e8d351468005957d203503f6a8d04fc79b2bcf53c1ef197fa02edaa762'
+      name: workers-scan
+      nodeSelector:
+        node-role.kubernetes.io/worker: ''
+      profile: xccdf_org.ssgproject.content_profile_moderate
+    - content: ssg-ocp4-ds.xml
+      contentImage: 'registry.redhat.io/compliance/openshift-compliance-rhel8-operator@sha256:5f8566e8d351468005957d203503f6a8d04fc79b2bcf53c1ef197fa02edaa762'
+      name: platform-scan
+      profile: xccdf_org.ssgproject.content_profile_moderate
+      scanType: Platform
+  schedule: 0 1 * * *

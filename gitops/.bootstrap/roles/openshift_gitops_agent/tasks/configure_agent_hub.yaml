@@ -1,0 +1,26 @@
+- name: Configure ArgoCD Hub Instance and Agent Principal
+  kubernetes.core.k8s:
+    template: 
+      - argocd-agent-principal/namespace.yaml
+      - argocd-agent-principal/argocd-agent-selfsigned-issuer.yaml
+      - argocd-agent-principal/argocd-agent-ca-issuer.yaml
+      - argocd-agent-principal/argocd-agent-ca-certificate.yaml
+      - argocd-agent-principal/argocd-agent-resource-proxy-tls-certificate.yaml
+      - argocd-agent-principal/argocd.yaml
+      - argocd-agent-principal/cluster-rolebinding.yaml
+      - argocd-agent-principal/console-link.yaml
+      - argocd-agent-principal/principal-cert.yaml
+      - argocd-agent-principal/repo-secret.yaml
+
+- name: Waiting since {{ lookup("pipe", "date +%r") }} for {{ gitops_instance_name }} deployment to complete
+  kubernetes.core.k8s_info:
+    api_version: argoproj.io/v1alpha1
+    kind: ArgoCD
+    namespace: '{{ gitops_instance_namespace }}'
+    name: '{{ gitops_instance_name }}'
+  register: argocd_instance
+  until:
+    - argocd_instance.resources.0.status.phase is defined
+    - argocd_instance.resources.0.status.phase == 'Available'
+  retries: 30
+  delay: 10

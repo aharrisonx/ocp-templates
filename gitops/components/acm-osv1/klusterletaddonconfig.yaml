@@ -1,0 +1,22 @@
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: osv1
+  namespace: osv1
+spec:
+  clusterName: osv1
+  clusterNamespace: osv1
+  clusterLabels:
+    name: osv1
+    cloud: Other
+    vendor: OpenShift
+    argocd-agent: osv1
+  applicationManager:
+    enabled: true
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  certPolicyController:
+    enabled: true

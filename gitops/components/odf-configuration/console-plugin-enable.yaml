@@ -1,0 +1,23 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: odf-console-plugin-enable
+  namespace: console-plugin-jobs
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      containers:
+        - image: registry.redhat.io/openshift4/ose-cli:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              oc patch console.operator.openshift.io cluster --type json -p '[{"op": "add", "path": "/spec/plugins", "value": ["odf-console"]}]'
+          imagePullPolicy: IfNotPresent
+          name: odf-console-plugin-enable
+      dnsPolicy: ClusterFirst
+      restartPolicy: OnFailure
+      serviceAccountName: console-plugin-jobs-sa
+      terminationGracePeriodSeconds: 30

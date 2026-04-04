@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/node-health-check-operator/
+
+patches:
+  - target:
+      kind: OperatorPolicy
+      name: node-health-check-operator-policy
+    patch: |
+      - op: replace
+        path: /spec/subscription/channel
+        value: stable
+      - op: add
+        path: /spec/versions/-
+        value: "node-healthcheck-operator.v0.10.3"

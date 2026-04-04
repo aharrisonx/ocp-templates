@@ -1,0 +1,9 @@
+- import_role:
+    name: openshift_common
+    tasks_from: get_infrastructure.yml
+
+- import_tasks: install_gitops_operator.yml
+
+- import_tasks: configure_apps.yaml
+  
+- import_tasks: report_success.yml

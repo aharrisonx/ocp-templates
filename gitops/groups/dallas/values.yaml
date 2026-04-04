@@ -1,0 +1,12 @@
+projects:
+
+applications:
+  
+  # In wave 20 due to machineconfigs that are applied. 
+  node-ntp-machine-config:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '20'
+    source:
+      path: groups/dallas/overlays/node-ntp-machine-config
+

@@ -1,0 +1,28 @@
+- when: ocp_infrastructure is not defined
+  block:
+    - name: Obtain cluster infrastructure info
+      kubernetes.core.k8s_info:
+        api_version: config.openshift.io/v1
+        kind: Infrastructure
+        name: cluster
+      register: ocp_infrastructure_result
+
+    - name: Set infrastructure info
+      set_fact:
+        ocp_cluster_url: >-
+          {{ ocp_infrastructure_result.resources.0.status.apiServerURL }}
+        ocp_base_domain: >-
+          {{ ocp_infrastructure_result.resources.0.status.apiServerURL | regex_replace("https://api\.(.*):6443", "\1") }}
+        ocp_platform_domain: >-
+          {{ ocp_infrastructure_result.resources.0.status.apiServerURL | regex_replace("https://api\.[^.]*\.(.*):6443", "\1") }}
+        ocp_cluster_name: >-
+          {{ ocp_infrastructure_result.resources.0.status.apiServerURL | regex_replace("https://api\.([^.]*)\..*:6443", "\1") }}
+
+    - name: Set preferred cluster name
+      set_fact:
+        ocp_infrastructure: '{{ ocp_infrastructure_result.resources.0 }}'
+        ocp_preferred_cluster_name: >-
+          {{ cluster_name | default(ocp_cluster_name) }}
+
+- debug:
+    var: ocp_base_domain

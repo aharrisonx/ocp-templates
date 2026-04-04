@@ -1,0 +1,16 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    rbac.authorization.kubernetes.io/autoupdate: "true"
+  name: console-plugin-jobs-sa-role
+rules:
+  - apiGroups:
+      - operator.openshift.io
+    resources:
+      - consoles
+    verbs:
+      - get
+      - list
+      - patch

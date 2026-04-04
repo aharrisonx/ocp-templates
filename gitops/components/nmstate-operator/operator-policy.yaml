@@ -1,0 +1,23 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: nmstate-operator-policy
+  namespace: open-cluster-management-policies
+spec:
+  remediationAction: enforce
+  complianceType: musthave
+  operatorGroup:
+    name: openshift-nmstate
+    namespace: openshift-nmstate
+    targetNamespaces:
+      - openshift-nmstate
+  subscription:
+    name: kubernetes-nmstate-operator
+    namespace: openshift-nmstate
+    channel: stable
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: kubernetes-nmstate-operator.4.20.0-202602180432
+  versions: []
+  upgradeApproval: Automatic

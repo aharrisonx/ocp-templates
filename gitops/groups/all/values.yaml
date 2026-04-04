@@ -1,0 +1,99 @@
+projects:
+
+applications:
+
+  cert-manager-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: cert-manager
+    source:
+      path: components/cert-manager-configuration
+
+  kubelet-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    source:
+      path: components/kubelet-configuration
+
+  nmstate-instance:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-nmstate
+    source:
+      path: components/nmstate-instance
+  
+  ldap-oauth-config:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-config
+    source:
+      path: components/ldap-oauth-config
+
+  rbac:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-config
+    source:
+      path: components/rbac
+  
+  cluster-certificates-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '20'
+    # destination:
+    #   namespace: openshift-config
+    source:
+      path: components/cluster-certificates-configuration
+
+  node-feature-discovery-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-nfd
+    source:
+      path: components/node-feature-discovery-configuration
+
+  compliance-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-compliance
+    source:
+      path: components/compliance-configuration
+
+  osv-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-cnv
+    source:
+      path: components/osv-configuration
+  
+  console-plugin-jobs-resources:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    source:
+      path: components/console-plugin-jobs-resources
+  
+  # In wave 20 due to machineconfigs that are applied. 
+  descheduler-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '20'
+    destination:
+      namespace: openshift-kube-descheduler-operator 
+    source:
+      path: components/descheduler-configuration

@@ -1,0 +1,11 @@
+- import_tasks: get_argocd_route.yml
+
+- name: Report success
+  set_fact:
+    msg: |
+      Argo CD installed successfully.
+
+      You can browse to:
+      https://{{ argocd_route.resources.0.spec.host }}
+
+- debug: msg="{{ msg.split('\n') }}"

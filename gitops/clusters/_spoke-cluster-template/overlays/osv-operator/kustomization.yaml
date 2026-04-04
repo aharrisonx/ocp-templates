@@ -1,0 +1,21 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/osv-operator/
+
+patches:
+  - target:
+      kind: OperatorPolicy
+      name: osv-operator-policy
+    patch: |
+      - op: replace
+        path: /spec/subscription/channel
+        value: stable
+      - op: add
+        path: /spec/versions/-
+        value: "kubevirt-hyperconverged-operator.v4.20.7"
+      - op: add
+        path: /spec/versions/-
+        value: "kubevirt-hyperconverged-operator.v4.20.8"

@@ -1,0 +1,13 @@
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  name: osv1
+  labels:
+    name: osv1
+    cloud: Other
+    vendor: OpenShift
+    argocd-agent: osv1
+  annotations: {}
+spec:
+  hubAcceptsClient: true

@@ -1,0 +1,228 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: argocd-agent-registration
+  namespace: open-cluster-management-global-set  
+spec:
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: argocd-agent-registration
+        spec:
+          severity: critical
+          object-templates-raw: >
+            {{- range $mc := (lookup "cluster.open-cluster-management.io/v1"
+            "ManagedCluster" "" "" "argocd-agent").items }}
+              {{- $mc_name := $mc.metadata.name }}
+              {{- $agent_name := (index $mc.metadata.labels "argocd-agent")}}
+
+            - complianceType: mustonlyhave
+              objectDefinition:
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: argocd-agent-{{ $agent_name }}-cluster
+                  namespace: argocd
+                  labels:
+                    argocd.argoproj.io/secret-type: cluster
+                    argocd-agent.argoproj-labs.io/agent-name: argocd-agent-{{ $agent_name }}
+                stringData:
+                  name: argocd-agent-{{ $agent_name }}
+                  server: https://argocd-agent-principal-resource-proxy.argocd.svc.cluster.local:9090?agentName=argocd-agent-{{ $agent_name }}
+                  config: |
+                    {
+                      "tlsClientConfig": {
+                          "insecure": false,
+                          "certData": "{{ (fromSecret "argocd" (printf "argocd-principal-%s" $agent_name ) "tls.crt") }}",
+                          "keyData": "{{ (fromSecret "argocd" (printf "argocd-principal-%s" $agent_name ) "tls.key") }}",
+                          "caData": "{{ (fromSecret "argocd" (printf "argocd-principal-%s" $agent_name ) "ca.crt") }}"
+                      }
+                    }
+
+            {{- end }}
+          remediationAction: enforce
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: argocd-agent-registration2
+        spec:
+          severity: critical
+          remediationAction: enforce
+          object-templates:
+            - objectDefinition:
+                apiVersion: cert-manager.io/v1
+                kind: Issuer
+                metadata:
+                  name: argocd-agent-selfsigned
+                  namespace: argocd
+                spec:
+                  selfSigned: {}
+              complianceType: mustonlyhave
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: argocd-agent-registration3
+        spec:
+          severity: critical
+          remediationAction: enforce
+          object-templates:
+            - objectDefinition:
+                apiVersion: cert-manager.io/v1
+                kind: Certificate
+                metadata:
+                  name: argocd-agent-ca
+                  namespace: argocd
+                spec:
+                  commonName: argocd-agent-ca
+                  duration: 87600h
+                  isCA: true
+                  issuerRef:
+                    name: argocd-agent-selfsigned
+                    kind: Issuer
+                  secretName: argocd-agent-ca
+              complianceType: mustonlyhave
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: argocd-agent-registration4
+        spec:
+          severity: critical
+          remediationAction: enforce
+          object-templates:
+            - objectDefinition:
+                apiVersion: cert-manager.io/v1
+                kind: Issuer
+                metadata:
+                  name: argocd-agent-ca
+                  namespace: argocd
+                spec:
+                  ca:
+                    secretName: argocd-agent-ca
+              complianceType: mustonlyhave
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: argocd-agent-registration5
+        spec:
+          severity: critical
+          remediationAction: enforce
+          object-templates:
+            - objectDefinition:
+                apiVersion: cert-manager.io/v1
+                kind: Certificate
+                metadata:
+                  name: argocd-agent-resource-proxy-tls
+                  namespace: argocd
+                spec:
+                  commonName: argocd-agent-principal-resource-proxy
+                  duration: 8760h
+                  issuerRef:
+                    name: argocd-agent-ca
+                    kind: Issuer
+                  secretName: argocd-agent-resource-proxy-tls
+                  dnsNames:
+                    - argocd-agent-principal-resource-proxy.argocd.svc.cluster.local
+                    - argocd-agent-principal-resource-proxy.argocd.svc
+                  renewBefore: 720h
+                  usages:
+                    - server auth
+              complianceType: mustonlyhave
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: argocd-agent-registration6
+        spec:
+          severity: critical
+          object-templates-raw: >
+            {{- range $mc := (lookup "cluster.open-cluster-management.io/v1"
+            "ManagedCluster" "" "" "argocd-agent").items }}
+              {{- $mc_name := $mc.metadata.name }}
+              {{- $agent_name := (index $mc.metadata.labels "argocd-agent")}}
+
+            - complianceType: mustonlyhave
+              objectDefinition:
+                kind: Namespace
+                apiVersion: v1
+                metadata:
+                  name: argocd-agent-{{ $agent_name }}
+
+            - complianceType: mustonlyhave
+              objectDefinition:
+                apiVersion: cert-manager.io/v1
+                kind: Certificate
+                metadata:
+                  name: argocd-agent-{{ $agent_name }}
+                  namespace: argocd
+                spec:
+                  secretName: argocd-agent-{{ $agent_name }}
+                  issuerRef:
+                    name: argocd-agent-ca
+                    kind: Issuer
+                  commonName: argocd-agent-{{ $agent_name }}
+                  subject:
+                    organizationalUnits:
+                      - shanehomelab.com
+                  usages:
+                    - client auth
+                  dnsNames:
+                  - argocd-agent-{{ $agent_name }}.ocp.jobu.net
+
+            - complianceType: mustonlyhave
+              objectDefinition:
+                apiVersion: cert-manager.io/v1
+                kind: Certificate
+                metadata:
+                  name: argocd-principal-{{ $agent_name }}
+                  namespace: argocd
+                spec:
+                  secretName: argocd-principal-{{ $agent_name }}
+                  issuerRef:
+                    name: argocd-agent-ca
+                    kind: Issuer
+                  commonName: argocd-agent-{{ $agent_name }}
+                  subject:
+                    organizationalUnits:
+                      - shanehomelab.com
+                  dnsNames:
+                  - argocd-agent-{{ $agent_name }}.ocp.jobu.net
+            {{- end }}
+          remediationAction: enforce
+  remediationAction: enforce
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: argocd-agent-registration
+  namespace: open-cluster-management-global-set  
+spec:
+  clusterSets:
+    - global
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - key: argocd-agent-control-plane
+              operator: Exists
+  numberOfClusters: 1
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-argocd-agent-registration
+  namespace: open-cluster-management-global-set
+placementRef:
+  name: argocd-agent-registration
+  kind: Placement
+  apiGroup: cluster.open-cluster-management.io
+subjects:
+  - name: argocd-agent-registration
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io

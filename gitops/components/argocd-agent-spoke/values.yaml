@@ -1,0 +1,23 @@
+agentMode: "autonomous"
+auth: "mtls:CN=([^,]+)"
+logLevel: "info"
+logFormat: "text"
+# Update this to match your hub's principal route
+server: "argocd-agent-principal-argocd.apps.hub1.ocp.jobu.net"
+serverPort: "443"
+metricsPort: "8181"
+tlsClientInSecure: "false"
+healthzPort: "8002"
+redisAddress: "argocd-redis:6379"
+redisUsername: ""
+argoCdRedisSecretName: "argocd-redis-initial-password"
+argoCdRedisPasswordKey: "admin.password"
+enableWebSocket: false
+enableCompression: true
+pprofPort: "0"
+enableResourceProxy: true
+cacheRefreshInterval: "10s"
+keepAliveInterval: "50s"
+tlsClientKeyPath: ""
+tlsClientCertPath: ""
+tlsRootCAPath: ""

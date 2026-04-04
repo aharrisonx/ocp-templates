@@ -1,0 +1,23 @@
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: mtv-operator-policy
+  namespace: open-cluster-management-policies
+spec:
+  complianceType: musthave
+  remediationAction: enforce
+  severity: critical
+  operatorGroup:
+    name: openshift-mtv
+    namespace: openshift-mtv
+    targetNamespaces:
+      - openshift-mtv
+  subscription:
+    channel: release-v2.10
+    name: mtv-operator
+    namespace: openshift-mtv
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: mtv-operator.v2.10.6
+  versions: []
+  upgradeApproval: Automatic

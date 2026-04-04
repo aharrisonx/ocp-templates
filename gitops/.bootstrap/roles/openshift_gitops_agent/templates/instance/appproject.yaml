@@ -1,0 +1,17 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: "{{ gitops_app_project }}"
+  namespace: "{{ gitops_agent_namespace }}"
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  destinations:
+  - namespace: '*'
+    server: '*'
+  sourceRepos:
+  - '*'
+  sourceNamespaces:
+  - "{{ gitops_agent_namespace }}"

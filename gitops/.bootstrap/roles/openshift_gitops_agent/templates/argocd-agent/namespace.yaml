@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/display-name: ArgoCD Agent Hub Spoke
+  labels:
+    openshift.io/cluster-monitoring: 'true'
+  name: "{{ gitops_agent_namespace }}"

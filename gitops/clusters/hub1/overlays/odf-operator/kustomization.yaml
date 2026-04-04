@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/odf-operator/
+
+patches:
+  - target:
+      kind: OperatorPolicy
+      name: odf-operator-policy
+    patch: |
+      - op: replace
+        path: /spec/subscription/channel
+        value: stable-4.20
+      - op: add
+        path: /spec/versions/-
+        value: "odf-operator.v4.20.9-rhodf"

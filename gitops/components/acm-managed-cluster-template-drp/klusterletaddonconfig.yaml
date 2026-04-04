@@ -1,0 +1,22 @@
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: {{ cluster-name }}
+  namespace: {{ cluster-name }}
+spec:
+  clusterName: {{ cluster-name }}
+  clusterNamespace: {{ cluster-name }}
+  clusterLabels:
+    name: {{ cluster-name }}
+    cloud: Other
+    vendor: OpenShift
+    argocd-agent: {{ cluster-name }}
+  applicationManager:
+    enabled: true
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  certPolicyController:
+    enabled: true

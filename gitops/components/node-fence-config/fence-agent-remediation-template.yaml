@@ -1,0 +1,24 @@
+apiVersion: fence-agents-remediation.medik8s.io/v1alpha1
+kind: FenceAgentsRemediationTemplate
+metadata:
+  name: fenceagentsremediationtemplate-default
+  namespace: openshift-workload-availability
+spec:
+  template:
+    spec:
+      agent: fence_redfish
+      nodeparameters:
+        '--ip':       
+           hub-node-01.ocp.jobu.net: 10.0.10.24
+           hub-node-02.ocp.jobu.net: 10.0.10.25
+           hub-node-03.ocp.jobu.net: 10.0.10.26
+      remediationStrategy: ResourceDeletion
+      retrycount: 5
+      retryinterval: 5s
+      sharedSecretName: fence-agents-credentials-shared
+      sharedparameters:
+        '--action': reboot
+        '--ipport': '443'
+        '--ssl-insecure': ''
+        '--systems-uri': /redfish/v1/Systems/System.Embedded.1
+      timeout: 1m0s

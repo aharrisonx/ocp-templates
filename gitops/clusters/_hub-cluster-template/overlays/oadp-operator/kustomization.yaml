@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/oadp-operator/
+
+patches:
+  - target:
+      kind: OperatorPolicy
+      name: oadp-operator-policy
+    patch: |
+      - op: replace
+        path: /spec/subscription/channel
+        value: stable
+      - op: add
+        path: /spec/versions/-
+        value: "oadp-operator.v1.5.5"

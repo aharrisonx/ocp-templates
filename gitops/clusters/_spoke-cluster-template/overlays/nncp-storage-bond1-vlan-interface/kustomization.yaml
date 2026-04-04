@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - 0sv-node-wrk001-storage-bond.yaml
+  - 0sv-node-wrk002-storage-bond.yaml
+  - 0sv-node-wrk003-storage-bond.yaml
+  - 0sv-node-wrk004-storage-bond.yaml

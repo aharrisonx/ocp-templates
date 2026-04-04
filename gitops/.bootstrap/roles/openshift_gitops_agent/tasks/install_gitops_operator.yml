@@ -1,0 +1,21 @@
+- name: Deploy GitOps operator
+  kubernetes.core.k8s:
+    template:
+    - operator/namespace.yaml
+    - operator/operatorgroup.yaml
+    - operator/openshift-gitops-sub.yaml
+
+- import_role:
+    name: openshift_common
+    tasks_from: install_plan_approve_subtasks.yml
+  vars:
+    subscription_name: '{{ gitops_subscription_name }}'
+    subscription_namespace: '{{ gitops_subscription_namespace }}'
+  when: gitops_subscription_approval == 'Manual'
+
+- import_role:
+    name: openshift_common
+    tasks_from: wait_for_operator.yml
+  vars:
+    subscription_name: '{{ gitops_subscription_name }}'
+    subscription_namespace: '{{ gitops_subscription_namespace }}'

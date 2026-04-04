@@ -1,0 +1,24 @@
+- name: Create temporary kustomize directory for {{ kustomize_name }}
+  tempfile:
+    state: directory
+    suffix: -{{ kustomize_name }}-kustomize
+  register: tmpdir
+
+- debug:
+    msg: Created temporary directory {{ tmpdir.path }}
+
+- name: Copy kustomization Ansible templates to {{ tmpdir.path }}
+  template:
+    src: '{{ item }}'
+    dest: '{{ tmpdir.path }}'
+  loop: '{{ kustomize_files }}'
+
+- name: Set state of kustomization {{ kustomize_name }} to {{ kustomize_op }}
+  kubernetes.core.k8s:
+    definition: "{{ lookup('pipe', 'oc kustomize ' + tmpdir.path) }}"
+    state: '{{ kustomize_op }}'
+
+- name: Delete temporary kustomize directory {{ tmpdir.path }}
+  file:
+    path: '{{ tmpdir.path }}'
+    state: absent

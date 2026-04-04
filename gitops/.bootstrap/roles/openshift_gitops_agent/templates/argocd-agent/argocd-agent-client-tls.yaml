@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-agent-client-tls
+  namespace: "{{ gitops_agent_namespace }}"
+type: kubernetes.io/tls
+data:
+  ca.crt: "{{ hub_client_tls.data['ca.crt'] }}"
+  tls.crt: "{{ hub_client_tls.data['tls.crt'] }}"
+  tls.key: "{{ hub_client_tls.data['tls.key'] }}"

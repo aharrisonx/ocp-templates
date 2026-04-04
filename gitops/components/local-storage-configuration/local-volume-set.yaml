@@ -1,0 +1,25 @@
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeSet
+metadata:
+  name: odf-osd
+  namespace: openshift-local-storage
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+          - key: cluster.ocs.openshift.io/openshift-storage
+            operator: Exists
+  storageClassName: odf-osd
+  tolerations:
+    - effect: NoSchedule
+      key: node.ocs.openshift.io/storage
+      operator: Equal
+      value: 'true'
+  volumeMode: Block
+  deviceInclusionSpec:
+    deviceMechanicalProperties:
+      - NonRotational
+    deviceTypes:
+      - disk
+      - part
+    minSize: 1000G

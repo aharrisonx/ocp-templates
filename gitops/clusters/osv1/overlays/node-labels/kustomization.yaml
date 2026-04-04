@@ -1,0 +1,14 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  #- 0sv-node-ctl001.yaml
+  #- 0sv-node-ctl002.yaml
+  #- 0sv-node-ctl003.yaml
+  #- 0sv-node-wrk001.yaml
+  #- 0sv-node-wrk002.yaml
+  #- 0sv-node-wrk003.yaml
+  #- 0sv-node-wrk004.yaml
+  
+  

@@ -1,0 +1,36 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: dal-prod-vlan220
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/worker: ''
+  desiredState:
+    interfaces:
+      - description: vlan 220  using bond0
+        ipv4:
+          enabled: false
+        name: bond0.220
+        state: up
+        type: vlan
+        vlan:
+          base-iface: bond0
+          id: 220
+      - bridge:
+          allow-extra-patch-ports: true
+          options:
+            stp:
+              enabled: false
+          port:
+            - name: bond0.220
+        description: Bridge on VLAN220 using bond0
+        ipv4:
+          enabled: false
+        name: br-220
+        state: up
+        type: ovs-bridge
+    ovn:
+      bridge-mappings:
+        - bridge: br-220
+          localnet: dal-nad-prod-220
+          state: present

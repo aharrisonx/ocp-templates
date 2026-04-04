@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - 1.otel-collector-namespace.yaml
+  - 2.otel-collector-serviceaccount.yaml
+  - 3.otel-collector-clusterroles.yaml
+  - 4.otel-collector-clusterrolebinding.yaml
+  - 5.otel-collector-scc-securityContextConstraints.yaml
+  - 6.otel-collector-ConfigMap.yaml
+  - 7.otel-collector-config.yaml

@@ -1,0 +1,13 @@
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: dal-nad-prod-220
+  namespace: default
+spec:
+  config: '{
+    "name":"dal-nad-prod-220",
+    "type":"ovn-k8s-cni-overlay",
+    "cniVersion":"0.4.0",
+    "topology":"localnet",
+    "netAttachDefName":"default/dal-nad-prod-220"
+    }'

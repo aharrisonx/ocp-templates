@@ -1,0 +1,17 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-agent-principal-tls
+  namespace: argocd
+spec:
+  dnsNames:
+  - argocd-agent-principal-argocd.apps.${CLUSTER_BASE_DOMAIN}
+  issuerRef:
+    name: argocd-agent-ca
+    kind: Issuer
+  commonName: principal
+  secretName: argocd-agent-principal-tls
+  subject:
+    organizationalUnits:
+      - "${CLUSTER_BASE_DOMAIN}"

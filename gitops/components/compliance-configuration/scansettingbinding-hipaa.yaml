@@ -1,0 +1,16 @@
+apiVersion: compliance.openshift.io/v1alpha1
+kind: ScanSettingBinding
+metadata:
+  name: hipaa-nist-800-53-scan
+  namespace: openshift-compliance
+profiles:
+- apiGroup: compliance.openshift.io/v1alpha1
+  kind: Profile
+  name: ocp4-moderate
+- apiGroup: compliance.openshift.io/v1alpha1
+  kind: Profile
+  name: rhcos4-moderate
+settingsRef:
+  apiGroup: compliance.openshift.io/v1alpha1
+  kind: ScanSetting
+  name: default

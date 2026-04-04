@@ -1,0 +1,5 @@
+- name: Configure App of Apps
+  kubernetes.core.k8s:
+    template: 
+      - instance/appproject.yaml
+      - instance/root-application.yaml

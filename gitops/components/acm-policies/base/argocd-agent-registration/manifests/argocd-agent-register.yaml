@@ -1,0 +1,73 @@
+---
+object-templates-raw: |
+  ## look through all of the managed clusters, and find the onces where argo-agent should be running
+  {{- range $mc := (lookup "cluster.open-cluster-management.io/v1" "ManagedCluster" "" "" "argocd-agent").items }}
+    {{- $mc_name := $mc.metadata.name }}
+    {{- $agent_name := (index $mc.metadata.labels "argocd-agent")}}
+
+  - complianceType: mustonlyhave
+    objectDefinition:
+      kind: Namespace
+      apiVersion: v1
+      metadata:
+        name: argocd-agent-{{ $agent_name }}
+
+  - complianceType: mustonlyhave
+    objectDefinition:
+      apiVersion: cert-manager.io/v1
+      kind: Certificate
+      metadata:
+        name: argocd-agent-{{ $agent_name }}
+        namespace: argocd
+      spec:
+        secretName: argocd-agent-{{ $agent_name }}
+        issuerRef:
+          name: argocd-agent-ca
+          kind: Issuer
+        commonName: argocd-agent-{{ $agent_name }}
+        subject:
+          organizationalUnits:
+            - ${CLUSTER_BASE_DOMAIN}
+        usages:
+          - client auth
+        dnsNames:
+        - argocd-agent-{{ $agent_name }}.${CLUSTER_BASE_DOMAIN}
+
+  - complianceType: mustonlyhave
+    objectDefinition:
+      apiVersion: cert-manager.io/v1
+      kind: Certificate
+      metadata:
+        name: argocd-principal-{{ $agent_name }}
+        namespace: argocd
+      spec:
+        secretName: argocd-principal-{{ $agent_name }}
+        issuerRef:
+          name: argocd-agent-ca
+          kind: Issuer
+        commonName: argocd-agent-{{ $agent_name }}
+        subject:
+          organizationalUnits:
+            - ${CLUSTER_BASE_DOMAIN}
+        dnsNames:
+        - argocd-agent-{{ $agent_name }}.${CLUSTER_BASE_DOMAIN}
+  - complianceType: mustonlyhave
+    objectDefinition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: AppProject
+      metadata:
+        name: argocd-agent-{{ $agent_name }}
+        namespace: argocd
+      spec:
+        clusterResourceWhitelist:
+        - group: '*'
+          kind: '*'
+        destinations:
+        - namespace: '*'
+          server: '*'
+        sourceRepos:
+        - '*'
+        sourceNamespaces:
+        - argocd-agent-{{ $agent_name }}
+
+  {{- end }}

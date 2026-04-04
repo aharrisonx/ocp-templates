@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: argocd-agent
+
+components:
+- ../../components/health-application
+- ../../components/health-build
+- ../../components/health-imagestream
+- ../../components/health-multiclusterhub
+- ../../components/health-pvc
+- ../../components/health-rolloutmanager
+#- ../../components/health-stackrox
+- ../../components/health-subscription
+- ../../components/policy-generator
+- ../../components/setenv-plugin
+
+resources:
+- ../../base
+- application-controller-cluster-admin-role.yaml
+- argocd-agent-cluster-admin-role.yaml
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/server/enabled
+        value: false
+      - op: replace
+        path: /spec/server/route/enabled
+        value: false
+      - op: add
+        path: /spec/argoCDAgent
+        value:
+          agent:
+            enabled: true
+            creds: mtls:CN=([^,]+)
+            image: 'quay.io/argoprojlabs/argocd-agent:v0.7.4'
+            client:
+              enableCompression: true
+              enableWebSocket: false
+              mode: autonomous
+              principalServerAddress: argocd-agent-principal-argocd.apps.${CLUSTER_BASE_DOMAIN}
+            tls:
+              rootCASecretName: argocd-agent-ca
+              secretName: argocd-agent-client-tls
+    target:
+      kind: ArgoCD

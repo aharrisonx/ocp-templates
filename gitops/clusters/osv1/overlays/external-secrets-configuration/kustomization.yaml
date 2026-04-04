@@ -1,0 +1,15 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/external-secrets-configuration/
+
+patches:
+  - target:
+      kind: ClusterSecretStore
+      name: external-secrets-vault-ss
+    patch: |
+      - op: replace
+        path: /spec/provider/vault/auth/jwt/path
+        value: clusterjwt/dal_hub1

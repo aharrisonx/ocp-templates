@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argocd
+resources:
+- gitops-controller-rbac.yaml
+- gitops-server-rbac.yaml
+- namespace.yaml
+- argocd.yaml
+- principal-cert.yaml
+#- root-application.yaml
+- appset-in-any-namespace-clusterrole.yaml
+- agent-principal-rbac.yaml
+- acm-policy-rolebinding.yaml

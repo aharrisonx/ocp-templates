@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../../components/redhat-otel-operator/
+
+patches:
+  - target:
+      kind: OperatorPolicy
+      name: redhat-otel-operator-policy
+    patch: |
+      - op: replace
+        path: /spec/subscription/channel
+        value: stable
+      - op: add
+        path: /spec/versions/-
+        value: "opentelemetry-operator.v0.144.0-1"

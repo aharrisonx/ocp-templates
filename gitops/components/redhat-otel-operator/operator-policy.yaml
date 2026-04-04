@@ -1,0 +1,20 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: redhat-otel-operator-policy
+  namespace: open-cluster-management-policies
+spec:
+  remediationAction: enforce
+  complianceType: musthave
+  # operatorGroup:
+  #   name: openshift-opentelemetry-operator
+  #   namespace: openshift-opentelemetry-operator
+  subscription:
+    name: opentelemetry-product
+    channel: stable
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: opentelemetry-operator.v0.144.0-1
+  versions: []
+  upgradeApproval: Automatic

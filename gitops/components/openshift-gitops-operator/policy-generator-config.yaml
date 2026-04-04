@@ -1,0 +1,13 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: openshift-gitops-operator-generator
+policyDefaults:
+  complianceType: "musthave"
+  namespace: open-cluster-management-global-set
+  remediationAction: enforce
+  generatePolicyPlacement: false
+policies:
+  - name: argocd-operator-policy
+    manifests:
+      - path: manifests/

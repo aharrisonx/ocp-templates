@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: InstallPlan
+metadata:
+  name: install-
+  namespace: openshift-nfd  
+spec:
+  approval: Manual
+  approved: true
+  clusterServiceVersionNames:
+    - nfd.
+

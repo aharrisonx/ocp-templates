@@ -1,0 +1,23 @@
+apiVersion: remediation.medik8s.io/v1alpha1
+kind: NodeHealthCheck
+metadata:
+  name: nodehealthcheck-master
+spec:
+  minHealthy: 67%
+  remediationTemplate:
+    apiVersion: fence-agents-remediation.medik8s.io/v1alpha1
+    kind: FenceAgentsRemediationTemplate
+    name: fenceagentsremediationtemplate-default
+    namespace: openshift-workload-availability
+  selector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        values: []
+  unhealthyConditions:
+    - duration: 2m
+      status: 'False'
+      type: Ready
+    - duration: 2m
+      status: Unknown
+      type: Ready

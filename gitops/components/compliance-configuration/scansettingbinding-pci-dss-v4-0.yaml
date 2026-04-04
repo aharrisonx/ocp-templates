@@ -1,0 +1,16 @@
+apiVersion: compliance.openshift.io/v1alpha1
+kind: ScanSettingBinding
+metadata:
+  name: pci-dss-v4-scan
+  namespace: openshift-compliance
+profiles:
+- apiGroup: compliance.openshift.io/v1alpha1
+  kind: Profile
+  name: ocp4-pci-dss-4-0
+- apiGroup: compliance.openshift.io/v1alpha1
+  kind: Profile
+  name: ocp4-pci-dss-node-4-0
+settingsRef:
+  apiGroup: compliance.openshift.io/v1alpha1
+  kind: ScanSetting
+  name: default

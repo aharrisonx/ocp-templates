@@ -1,0 +1,38 @@
+- name: Retrieve subscription {{ subscription_namespace }}/{{ subscription_name }}
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: '{{ subscription_name }}'
+    namespace: '{{ subscription_namespace }}'
+  register: oscomm_operator_subscription_result
+  until:
+    - oscomm_operator_subscription_result.resources.0.status is defined
+  retries: 120
+  delay: 1
+
+- name: Waiting since {{ lookup("pipe", "date +%r") }} for install plan to show up
+  kubernetes.core.k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: Subscription
+    name: '{{ subscription_name }}'
+    namespace: '{{ subscription_namespace }}'
+  register: oscomm_operator_subscription_result
+  when:
+    - oscomm_operator_subscription_result.resources.0.status.installedCSV | default('') | length == 0
+  until:
+    - oscomm_operator_subscription_result.resources.0.status.installPlanRef is defined
+  retries: 120
+  delay: 1
+
+- name: Approve install plan
+  kubernetes.core.k8s:
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: InstallPlan
+      metadata:
+        name: '{{ oscomm_operator_subscription_result.resources.0.status.installPlanRef.name }}'
+        namespace: '{{ oscomm_operator_subscription_result.resources.0.status.installPlanRef.namespace }}'
+      spec:
+        approved: true
+  when:
+    - oscomm_operator_subscription_result.skipped is not defined

@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cabundle
+  namespace: otel-o11y
+  annotations:
+    service.beta.openshift.io/inject-cabundle: "true"

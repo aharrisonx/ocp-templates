@@ -1,0 +1,10 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+#  - compliancesuite.yaml <-- Removed from kustomization to allow ScanSettingBindings to create ComplianceSuites from profiles
+  - scansettingbinding-cis.yaml
+  - scansettingbinding-e8.yaml
+  - scansettingbinding-hipaa.yaml
+  - scansettingbinding-pci-dss-v4-0.yaml

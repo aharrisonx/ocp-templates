@@ -1,0 +1,33 @@
+gitops_subscription_namespace: openshift-gitops-operator
+gitops_subscription_name: openshift-gitops-operator
+gitops_subscription_channel: latest
+gitops_subscription_approval: Manual
+gitops_subscription_startingcsv: ""
+
+gitops_cluster_management_namespaces: "openshift-gitops, argocd, argocd-agent"
+
+gitops_instance_namespace: argocd
+gitops_instance_name: argocd
+gitops_agent_namespace: argocd-agent
+
+gitops_app_project: cluster-config
+
+gitops_instance_high_availability: false
+
+# If your OIDC provider is set up with a certificate which is not signed by one of the well known
+# certificate authorities you can provide a custom certificate which will be used in verifying
+# the OIDC provider's TLS certificate when communicating with it.
+gitops_instance_oidc_config_root_ca: ''
+
+# Alternatively, you can disable the certificate validation for all connections made by the
+# API server to the OIDC provider
+gitops_instance_oidc_tls_insecure_skip_verify: false
+
+gitops_create_cloudflare_tunnel: false
+
+gitops_autogitops_enabled: false
+
+gitops_ssh_key_file: id_ed25519
+
+rhsso_instance_namespace: rhsso
+rhsso_instance_name: keycloak

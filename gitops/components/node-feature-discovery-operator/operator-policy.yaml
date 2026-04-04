@@ -1,0 +1,24 @@
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: OperatorPolicy
+metadata:
+  name: nfd-operator-policy
+  namespace: open-cluster-management-policies
+spec:
+  remediationAction: enforce
+  complianceType: musthave
+  severity: critical
+  operatorGroup:
+    name: openshift-nfd
+    namespace: openshift-nfd
+    targetNamespaces:
+      - openshift-nfd
+  subscription:
+    name: nfd
+    namespace: openshift-nfd
+    channel: stable
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    startingCSV: nfd.4.20.0-202603051149
+  versions: []
+  upgradeApproval: Automatic

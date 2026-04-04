@@ -1,0 +1,36 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: dal-nonprod-vlan221
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/worker: ''
+  desiredState:
+    interfaces:
+      - description: vlan 221  using bond0
+        ipv4:
+          enabled: false
+        name: bond0.221
+        state: up
+        type: vlan
+        vlan:
+          base-iface: bond0
+          id: 221
+      - bridge:
+          allow-extra-patch-ports: true
+          options:
+            stp:
+              enabled: false
+          port:
+            - name: bond0.221
+        description: Bridge on VLAN221 using bond0
+        ipv4:
+          enabled: false
+        name: br-221
+        state: up
+        type: ovs-bridge
+    ovn:
+      bridge-mappings:
+        - bridge: br-221
+          localnet: dal-nad-np-221
+          state: present

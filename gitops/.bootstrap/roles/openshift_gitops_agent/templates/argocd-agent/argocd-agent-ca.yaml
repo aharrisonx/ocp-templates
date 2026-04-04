@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-agent-ca
+  namespace: "{{ gitops_agent_namespace }}"
+data:
+  tls.crt: "{{ hub_ca.data['tls.crt'] }}"

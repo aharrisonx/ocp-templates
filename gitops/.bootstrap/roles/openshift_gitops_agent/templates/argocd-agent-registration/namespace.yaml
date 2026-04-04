@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    openshift.io/display-name: ArgoCD Replication for Hub Agent 
+  labels:
+    openshift.io/cluster-monitoring: 'true'
+  name: "{{ gitops_agent_namespace }}-{{ ocp_preferred_cluster_name }}"

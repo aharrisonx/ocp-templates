@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: environment-variables
+  namespace: argocd-agent
+data:
+  KUSTOMIZE_PLUGIN_HOME: /etc/kustomize/plugin
+  CLUSTER_NAME: '{{ fromClusterClaim "argocd-agent" }}'
+  CLUSTER_BASE_DOMAIN: '{{ fromClusterClaim "argocd-agent" }}.${PLATFORM_BASE_DOMAIN}'
+          # all created clusters base domain should be <cluster-name>.<PLATFORM_BASE_DOMAIN> 
+  PLATFORM_BASE_DOMAIN: ${PLATFORM_BASE_DOMAIN}
+  INFRA_GITOPS_REPO: ${INFRA_GITOPS_REPO}

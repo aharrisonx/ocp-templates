@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: cert-manager-venafi-issuer
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  venafi:
+    zone: [ZONE]
+    tpp:
+      url: [URL]
+      credentialsRef:
+        name: external-secrets-venafi-token-secret

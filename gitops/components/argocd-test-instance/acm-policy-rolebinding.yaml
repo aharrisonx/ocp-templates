@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/component: argocd-agent-policy
+    app.kubernetes.io/managed-by: rhacm
+    app.kubernetes.io/name: argocd-agent-policy
+    app.kubernetes.io/part-of: argocd-agent
+  name: argocd-agent-policy
+  namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+  - kind: ServiceAccount
+    name: argocd-agent-policy
+    namespace: open-cluster-management-global-set

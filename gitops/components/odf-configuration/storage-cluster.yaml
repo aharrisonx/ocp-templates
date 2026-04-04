@@ -1,0 +1,42 @@
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  annotations:
+    cluster.ocs.openshift.io/local-devices: "true"
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  enableCephTools: true
+  arbiter:
+    enable: false
+  encryption:
+    clusterWide: true
+    enable: true
+    kms:
+      enable: false
+    storageClass: false
+  flexibleScaling: true
+  managedResources:
+    cephBlockPools:
+      defaultStorageClass: true
+  monDataDirHostPath: /var/lib/rook
+  network:
+    connections:
+      encryption:
+        enabled: false #Set to true to enable in-transit on the wire encryption for sensative workloads.
+  nodeTopologies:
+    arbiterLocation: ""
+  resourceProfile: balanced
+  storageDeviceSets:
+  - count: 9
+    dataPVCTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: "1"
+        storageClassName: odf-osd
+        volumeMode: Block
+    name: ocs-deviceset-odf-osd
+    replica: 1

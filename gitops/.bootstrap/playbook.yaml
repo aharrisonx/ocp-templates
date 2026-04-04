@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  vars:
+#   Leave commented to derive from DNS name
+#   cluster_name: hub1
+    git_src: [GIT-REPO-HERE]
+#   gitops_ssh_key_file: ~/.ssh/your_key_file
+    disconnected: false
+    agent_mode: true
+  gather_facts: false
+  tasks:
+    - import_role:
+        name: openshift_disconnected
+        tasks_from: deploy.yml
+      when: disconnected
+    - import_role:
+        name: openshift_rhacm
+        tasks_from: hub_deploy.yml
+      vars:
+        rhacm_operator_subscription_channel: release-2.15
+        rhacm_operator_subscription_starting_csv: advanced-cluster-management.v2.15.1
+    - import_role:
+        name: openshift_cert_manager
+        tasks_from: direct_deploy.yml
+      when: agent_mode
+    - import_role:
+        name: openshift_gitops_agent
+        tasks_from: deploy.yml
+      vars:
+        gitops_subscription_channel: gitops-1.20
+        gitops_subscription_startingcsv: openshift-gitops-operator.v1.20.1
+        # Delete gitops_agent_image here to use the operator default
+        gitops_agent_image: 'quay.io/argoprojlabs/argocd-agent:v0.7.4'
+      when: agent_mode
+    - import_role:
+        name: openshift_gitops
+        tasks_from: deploy.yml
+      when: not agent_mode

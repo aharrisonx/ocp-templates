@@ -1,0 +1,34 @@
+apiVersion: aap.ansible.com/v1alpha1
+kind: AnsibleAutomationPlatform
+metadata:
+  labels:
+    app.kubernetes.io/component: ansibleautomationplatform
+    app.kubernetes.io/managed-by: ansibleautomationplatform-operator
+    app.kubernetes.io/name: aap
+    app.kubernetes.io/operator-version: ''
+    app.kubernetes.io/part-of: aap
+  name: aap
+  namespace: aap
+spec:
+  route_tls_termination_mechanism: Edge
+  ingress_type: Route
+  image_pull_policy: IfNotPresent
+  database:
+    resource_requirements:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+    storage_requirements:
+      requests:
+        storage: 100Gi
+  controller:
+    disabled: false
+  eda:
+    disabled: false
+  hub:
+    disabled: false
+    storage_type: file
+    file_storage_storage_class: ocs-storagecluster-cephfs
+    file_storage_size: 50Gi          
+  lightspeed:
+    disabled: true

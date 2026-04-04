@@ -1,0 +1,84 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: bond1-storage-0sv-node-wrk003
+spec:
+  capture:
+    iface0: interfaces.mac-address == "6C:92:CF:5D:A7:81"
+    iface1: interfaces.mac-address == "6C:92:CF:38:62:E1"
+  desiredState:
+    interfaces:
+      - description: Configuration for Storage Interface (bond1)
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+        link-aggregation:
+          mode: 802.3ad
+          options:
+            lacp_rate: '1'
+            miimon: '100'
+            xmit_hash_policy: layer2+3
+          port:
+            - "{{ capture.iface0.interfaces.0.name }}"
+            - "{{ capture.iface1.interfaces.0.name }}"
+        mtu: 9000
+        name: bond1
+        state: up
+        type: bond
+      - description: Interface for VLAN 151
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+        name: bond1.151
+        state: up
+        type: vlan
+        vlan:
+          base-iface: bond1
+          id: 151
+      - description: Interface for VLAN 152
+        ipv4:
+          enabled: false
+        ipv6:
+          enabled: false
+        name: bond1.152
+        state: up
+        type: vlan
+        vlan:
+          base-iface: bond1
+          id: 152
+      - description: Shim Interface for Host Connectivity to VLAN 151 (Storage)
+        ipv4:
+          address:
+          - ip: 192.168.100.50
+            prefix-length: 21
+          dhcp: false
+          enabled: true
+        ipv6:
+          enabled: false
+        mac-vlan:
+          base-iface: bond1.151
+          mode: bridge
+          promiscuous: true
+        name: shim-vlan-151
+        state: up
+        type: mac-vlan
+      - description: Shim Interface for Host Connectivity to VLAN 152 (Storage)
+        ipv4:
+          address:
+          - ip: 192.168.200.50
+            prefix-length: 21
+          dhcp: false
+          enabled: true
+        ipv6:
+          enabled: false
+        mac-vlan:
+          base-iface: bond1.152
+          mode: bridge
+          promiscuous: true
+        name: shim-vlan-152
+        state: up
+        type: mac-vlan
+  nodeSelector:
+    kubernetes.io/hostname: 0sv-node-wrk003.ocp.jobu.net

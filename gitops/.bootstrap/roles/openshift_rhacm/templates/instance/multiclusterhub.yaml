@@ -1,0 +1,16 @@
+apiVersion: operator.open-cluster-management.io/v1
+kind: MultiClusterHub
+metadata:
+  namespace: open-cluster-management
+  name: multiclusterhub
+spec:
+{% if rhacm_place_on_infra_nodes %}
+  nodeSelector:
+    node-role.kubernetes.io/infra: ""
+  tolerations:
+  - key: node-role.kubernetes.io/infra
+    effect: NoSchedule
+    operator: Exists
+{% else %}
+  {}
+{% endif %}

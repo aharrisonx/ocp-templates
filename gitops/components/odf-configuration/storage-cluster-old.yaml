@@ -1,0 +1,38 @@
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  annotations:
+    uninstall.ocs.openshift.io/cleanup-policy: delete
+    uninstall.ocs.openshift.io/mode: graceful
+    ocs.openshift.io/clusterIsDisasterRecoveryTarget: "true"
+  name: ocs-storagecluster
+  namespace: openshift-storage
+spec:
+  monDataDirHostPath: /var/lib/rook
+  enableCephTools: true
+  encryption:
+    keyRotation:
+      schedule: '@weekly'
+    kms: {}
+  network:
+    connections:
+      encryption: 
+        enabled: true
+    multiClusterService: {}
+  nfs:
+    enable: false
+  storageDeviceSets:
+    - config: {}
+      count: 9
+      dataPVCTemplate:
+        metadata: {}
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: '1'
+          storageClassName: odf-osd
+          volumeMode: Block
+      name: ocs-deviceset-odf-osd
+      replica: 1

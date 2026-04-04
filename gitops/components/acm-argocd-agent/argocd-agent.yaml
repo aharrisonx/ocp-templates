@@ -1,0 +1,842 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: argocd-agent
+  namespace: open-cluster-management-global-set  
+spec:
+  disabled: false
+  hubTemplateOptions:
+    serviceAccountName: argocd-agent-policy
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: argocd-agent
+        spec:
+          severity: critical
+          remediationAction: enforce
+          object-templates:
+            - objectDefinition:
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: repo-ssh
+                  namespace: argocd-agent
+                  labels:
+                    argocd.argoproj.io/secret-type: repository
+                type: Opaque
+                data:
+                  type: '{{hub (fromSecret "argocd" "repo-ssh" "type") hub}}'
+                  url: '{{hub (fromSecret "argocd" "repo-ssh" "url") hub}}'
+                  sshPrivateKey: '{{hub (fromSecret "argocd" "repo-ssh" "sshPrivateKey") hub}}'
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: argocd-agent
+                  annotations:
+                    openshift.io/cluster-monitoring: "true"
+                    openshift.io/display-name: Argo CD Agent
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: setenv-cmp-plugin
+                  namespace: argocd-agent
+                data:
+                  plugin.yaml: >
+                    apiVersion: argoproj.io/v1alpha1
+
+                    kind: ConfigManagementPlugin
+
+                    metadata:
+                      name: setenv-cmp-plugin
+                    spec:
+                      version: v1.0
+                      init:
+                        command: [sh, -c, 'echo "Initializing setenv-plugin-cmp..."']
+                      generate:
+                        command:
+                          - sh
+                          - "-c"
+                          - "set -o pipefail && kustomize build --load-restrictor LoadRestrictionsNone --enable-helm --enable-alpha-plugins . | envsub"
+                      discover:
+                        find:
+                          command: [sh, -c, 'find . -maxdepth 1 -name kustomization.yaml']
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: environment-variables
+                  namespace: argocd-agent
+                data:
+                  CLUSTER_BASE_DOMAIN: hub1.ocp.jobu.net
+                  CLUSTER_NAME: hub1
+                  INFRA_GITOPS_REPO: https://github.com/cvs-health-enterprise-code/cpc-lab.git
+                  KUSTOMIZE_PLUGIN_HOME: /etc/kustomize/plugin
+                  PLATFORM_BASE_DOMAIN: ocp.jobu.net
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: argoproj.io/v1beta1
+                kind: ArgoCD
+                metadata:
+                  name: argocd
+                  namespace: argocd-agent
+                spec:
+                  controller:
+                    resources:
+                      requests:
+                        cpu: 250m
+                        memory: 1Gi
+                      limits:
+                        cpu: "4"
+                        memory: 8Gi
+                  server:
+                    enabled: false
+                  kustomizeBuildOptions: --enable-alpha-plugins --enable-helm --load-restrictor
+                    LoadRestrictionsNone
+                  redis:
+                    resources:
+                      requests:
+                        cpu: 250m
+                        memory: 128Mi
+                      limits:
+                        cpu: 500m
+                        memory: 256Mi
+                  repo:
+                    resources:
+                      requests:
+                        cpu: 250m
+                        memory: 256Mi
+                      limits:
+                        cpu: "1"
+                        memory: 1Gi
+                    env:
+                      - name: KUSTOMIZE_PLUGIN_HOME
+                        value: /etc/kustomize/plugin
+                      - name: POLICY_GEN_ENABLE_HELM
+                        value: "true"
+                    initContainers:
+                      - name: policy-generator-install
+                        args:
+                          - -c
+                          - cp
+                            /policy-generator/PolicyGenerator-not-fips-compliant
+                            /policy-generator-tmp/PolicyGenerator
+                        command:
+                          - /bin/bash
+                        image: registry.redhat.io/rhacm2/multicluster-operators-subscription-rhel9:v2.15
+                        volumeMounts:
+                          - name: policy-generator
+                            mountPath: /policy-generator-tmp
+                    volumeMounts:
+                      - name: policy-generator
+                        mountPath: /etc/kustomize/plugin/policy.open-cluster-management.io/v1/policygenerator
+                    sidecarContainers:
+                      - name: setenv-plugin
+                        resources: {}
+                        command:
+                          - /var/run/argocd/argocd-cmp-server
+                        image: quay.io/raffaelespazzoli/raffa-envsub:1.1
+                        volumeMounts:
+                          - name: var-files
+                            mountPath: /var/run/argocd
+                          - name: plugins
+                            mountPath: /home/argocd/cmp-server/plugins
+                          - name: tmp
+                            mountPath: /tmp
+                          - name: setenv-cmp-plugin
+                            mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                            subPath: plugin.yaml
+                          - name: policy-generator
+                            mountPath: /etc/kustomize/plugin/policy.open-cluster-management.io/v1/policygenerator
+                        envFrom:
+                          - configMapRef:
+                              name: environment-variables
+                        imagePullPolicy: Always
+                        securityContext:
+                          runAsNonRoot: true
+                    volumes:
+                      - name: policy-generator
+                        emptyDir: {}
+                      - name: setenv-cmp-plugin
+                        configMap:
+                          name: setenv-cmp-plugin
+                  resourceExclusions: |
+                    - apiGroups:
+                      - tekton.dev
+                      clusters:
+                      - '*'
+                      kinds:
+                      - TaskRun
+                      - PipelineRun
+                  resourceHealthChecks:
+                    - kind: Subscription
+                      group: operators.coreos.com
+                      check: >
+                        health_status = {}
+
+                        if obj.status ~= nil then
+                          if obj.status.conditions ~= nil then
+                            numDegraded = 0
+                            numPending = 0
+                            numSuspended = 0
+                            msg = ""
+                            for i, condition in pairs(obj.status.conditions) do
+                              msg = msg .. i .. ": " .. condition.type .. " | " .. condition.status .. " | " .. condition.reason .. "\n"
+                              if condition.type == "InstallPlanPending" and condition.status == "True" then
+                                if condition.reason == "RequiresApproval" then
+                                  numSuspended = numSuspended + 1
+                                else
+                                  numPending = numPending + 1
+                                end
+                              elseif (condition.type == "InstallPlanMissing" and condition.reason ~= "ReferencedInstallPlanNotFound") then
+                                numDegraded = numDegraded + 1
+                              elseif (condition.type == "CatalogSourcesUnhealthy" or condition.type == "InstallPlanFailed") and condition.status == "True" then
+                                numDegraded = numDegraded + 1
+                              elseif (condition.type == "ResolutionFailed" and condition.reason ~= "ConstraintsNotSatisfiable") then
+                                numDegraded = numDegraded + 1
+                              end
+                            end
+                            if numDegraded > 0 then
+                              health_status.status = "Degraded"
+                              health_status.message = msg
+                              return health_status
+                            elseif numSuspended > 0 then
+                              health_status.status = "Suspended"
+                              health_status.message = "Requires Approval"
+                              return health_status
+                            elseif numPending > 0 then
+                              health_status.status = "Progressing"
+                              health_status.message = "An install plan for a subscription is pending installation"
+                              return health_status
+                            else
+                              health_status.status = "Healthy"
+                              health_status.message = msg
+                              return health_status
+                            end
+                          end
+                        end
+
+                        health_status.status = "Progressing"
+
+                        health_status.message = "An install plan for a subscription is pending installation"
+
+                        return health_status
+                    - kind: InstallPlan
+                      group: operators.coreos.com
+                      check: |
+                        hs = {}
+                        if obj.status ~= nil then
+                          if obj.status.phase ~= nil then
+                            if obj.status.phase == "Complete" then
+                              hs.status = "Healthy"
+                              hs.message = obj.status.phase
+                              return hs
+                            elseif obj.status.phase == "RequiresApproval" then
+                              hs.status = "Suspended"
+                              hs.message = obj.status.phase
+                              return hs
+                            else
+                              hs.status = "Progressing"
+                              hs.message = obj.status.phase
+                              return hs
+                            end
+                          end
+                        end
+                        hs.status = "Progressing"
+                        hs.message = "Waiting for InstallPlan to complete"
+                  resourceTrackingMethod: annotation
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: ServiceAccount
+                metadata:
+                  name: argocd-agent-sa
+                  namespace: argocd-agent
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: ConfigMap
+                metadata:
+                  name: argocd-agent-params
+                  namespace: argocd-agent
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+                data:
+                  agent.cache.refresh-interval: 10s
+                  agent.compression.enabled: "true"
+                  agent.creds: mtls:CN=([^,]+)
+                  agent.healthz.port: "8002"
+                  agent.keep-alive.interval: 50s
+                  agent.log.format: text
+                  agent.log.level: info
+                  agent.metrics.port: "8181"
+                  agent.mode: autonomous
+                  agent.namespace: argocd-agent
+                  agent.pprof.port: "0"
+                  agent.redis.address: argocd-redis:6379
+                  agent.redis.username: ""
+                  agent.resource-proxy.enabled: "true"
+                  agent.server.address: argocd-agent-principal-argocd.apps.hub1.ocp.jobu.net
+                  agent.server.port: "443"
+                  agent.tls.client.insecure: "false"
+                  agent.tls.root-ca-secret-name: argocd-agent-ca
+                  agent.tls.secret-name: argocd-agent-client-tls
+                  agent.websocket.enabled: "false"
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRole
+                metadata:
+                  name: argocd-agent-clusterrole
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+                rules:
+                  - resources:
+                      - namespaces
+                    apiGroups:
+                      - ""
+                    verbs:
+                      - list
+                      - watch
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRoleBinding
+                metadata:
+                  name: argocd-agent-clusterrolebinding
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+                subjects:
+                  - name: argocd-agent-sa
+                    namespace: argocd-agent
+                    kind: ServiceAccount
+                roleRef:
+                  name: argocd-agent-clusterrole
+                  kind: ClusterRole
+                  apiGroup: rbac.authorization.k8s.io
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: Role
+                metadata:
+                  name: argocd-agent-role
+                  namespace: argocd-agent
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+                rules:
+                  - resources:
+                      - applications
+                      - appprojects
+                      - applicationsets
+                    apiGroups:
+                      - argoproj.io
+                    verbs:
+                      - create
+                      - get
+                      - list
+                      - watch
+                      - update
+                      - delete
+                      - patch
+                  - resources:
+                      - secrets
+                      - configmaps
+                    apiGroups:
+                      - ""
+                    verbs:
+                      - create
+                      - get
+                      - list
+                      - watch
+                      - update
+                      - patch
+                      - delete
+                  - resources:
+                      - events
+                    apiGroups:
+                      - ""
+                    verbs:
+                      - create
+                      - list
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                metadata:
+                  name: argocd-agent-rolebinding
+                  namespace: argocd-agent
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+                subjects:
+                  - name: argocd-agent-sa
+                    namespace: argocd-agent
+                    kind: ServiceAccount
+                roleRef:
+                  name: argocd-agent-role
+                  kind: Role
+                  apiGroup: rbac.authorization.k8s.io
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: argocd-agent-healthz
+                  namespace: argocd-agent
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+                spec:
+                  ports:
+                    - name: healthz
+                      port: 8002
+                      protocol: TCP
+                      targetPort: 8002
+                  selector:
+                    app.kubernetes.io/name: argocd-agent-agent
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: Service
+                metadata:
+                  name: argocd-agent-metrics
+                  namespace: argocd-agent
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+                spec:
+                  ports:
+                    - name: metrics
+                      port: 8181
+                      protocol: TCP
+                      targetPort: 8181
+                  selector:
+                    app.kubernetes.io/name: argocd-agent-agent
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: apps/v1
+                kind: Deployment
+                metadata:
+                  name: argocd-agent
+                  namespace: argocd-agent
+                  labels:
+                    app.kubernetes.io/component: agent
+                    app.kubernetes.io/name: argocd-agent-agent
+                    app.kubernetes.io/part-of: argocd-agent
+                spec:
+                  replicas: 1
+                  selector:
+                    matchLabels:
+                      app.kubernetes.io/component: agent
+                      app.kubernetes.io/name: argocd-agent-agent
+                      app.kubernetes.io/part-of: argocd-agent
+                  template:
+                    metadata:
+                      labels:
+                        app.kubernetes.io/component: agent
+                        app.kubernetes.io/name: argocd-agent-agent
+                        app.kubernetes.io/part-of: argocd-agent
+                    spec:
+                      volumes:
+                        - name: userpass-passwd
+                          secret:
+                            secretName: argocd-agent-agent-userpass
+                            optional: true
+                            items:
+                              - key: credentials
+                                path: userpass.creds
+                      serviceAccountName: argocd-agent-sa
+                      containers:
+                        - name: argocd-agent-agent
+                          resources:
+                            requests:
+                              cpu: 100m
+                              memory: 128Mi
+                            limits:
+                              cpu: 500m
+                              memory: 512Mi
+                          env:
+                            - name: ARGOCD_AGENT_REMOTE_SERVER
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.server.address
+                                  optional: true
+                            - name: ARGOCD_AGENT_REMOTE_PORT
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.server.port
+                                  optional: true
+                            - name: ARGOCD_AGENT_LOG_LEVEL
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.log.level
+                                  optional: true
+                            - name: ARGOCD_AGENT_NAMESPACE
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.namespace
+                                  optional: true
+                            - name: ARGOCD_AGENT_TLS_SECRET_NAME
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.tls.secret-name
+                                  optional: true
+                            - name: ARGOCD_AGENT_TLS_CLIENT_CERT_PATH
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.tls.client.cert-path
+                                  optional: true
+                            - name: ARGOCD_AGENT_TLS_CLIENT_KEY_PATH
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.tls.client.key-path
+                                  optional: true
+                            - name: ARGOCD_AGENT_TLS_INSECURE
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.tls.client.insecure
+                                  optional: true
+                            - name: ARGOCD_AGENT_TLS_ROOT_CA_SECRET_NAME
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.tls.root-ca-secret-name
+                                  optional: true
+                            - name: ARGOCD_AGENT_TLS_ROOT_CA_PATH
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.tls.root-ca-path
+                                  optional: true
+                            - name: ARGOCD_AGENT_MODE
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.mode
+                                  optional: true
+                            - name: ARGOCD_AGENT_CREDS
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.creds
+                                  optional: true
+                            - name: ARGOCD_AGENT_METRICS_PORT
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.metrics.port
+                                  optional: true
+                            - name: ARGOCD_AGENT_HEALTH_CHECK_PORT
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.healthz.port
+                                  optional: true
+                            - name: REDIS_ADDR
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.redis.address
+                                  optional: true
+                            - name: ARGOCD_AGENT_KEEP_ALIVE_PING_INTERVAL
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.keep-alive.interval
+                                  optional: true
+                            - name: REDIS_PASSWORD
+                              valueFrom:
+                                secretKeyRef:
+                                  name: argocd-redis-initial-password
+                                  key: admin.password
+                                  optional: true
+                            - name: REDIS_USERNAME
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.redis.username
+                                  optional: true
+                            - name: ARGOCD_PRINCIPAL_LOG_FORMAT
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.log.format
+                                  optional: true
+                            - name: ARGOCD_AGENT_ENABLE_WEBSOCKET
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.websocket.enabled
+                                  optional: true
+                            - name: ARGOCD_AGENT_ENABLE_COMPRESSION
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.compression.enabled
+                                  optional: true
+                            - name: ARGOCD_AGENT_PPROF_PORT
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.pprof.port
+                                  optional: true
+                            - name: ARGOCD_AGENT_ENABLE_RESOURCE_PROXY
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.resource-proxy.enabled
+                                  optional: true
+                            - name: ARGOCD_AGENT_CACHE_REFRESH_INTERVAL
+                              valueFrom:
+                                configMapKeyRef:
+                                  name: argocd-agent-params
+                                  key: agent.cache.refresh-interval
+                                  optional: true
+                          args:
+                            - agent
+                          image: registry.redhat.io/openshift-gitops-1/argocd-agent-rhel8:v1.19.1
+                          volumeMounts:
+                            - name: userpass-passwd
+                              mountPath: /app/config/creds
+                          imagePullPolicy: Always
+                          securityContext:
+                            runAsNonRoot: true
+                            capabilities:
+                              drop:
+                                - ALL
+                            allowPrivilegeEscalation: false
+                            readOnlyRootFilesystem: true
+                            seccompProfile:
+                              type: RuntimeDefault
+                          ports:
+                            - name: metrics
+                              containerPort: 8000
+                            - name: healthz
+                              containerPort: 8002
+                          livenessProbe:
+                            failureThreshold: 3
+                            httpGet:
+                              port: healthz
+                              path: /healthz
+                            initialDelaySeconds: 10
+                            periodSeconds: 10
+                            timeoutSeconds: 2
+                          readinessProbe:
+                            failureThreshold: 3
+                            httpGet:
+                              port: healthz
+                              path: /healthz
+                            initialDelaySeconds: 5
+                            periodSeconds: 10
+                            timeoutSeconds: 2
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRoleBinding
+                metadata:
+                  name: argocd-agent-cluster-admin
+                subjects:
+                  - name: argocd-agent-sa
+                    namespace: argocd-agent
+                    kind: ServiceAccount
+                roleRef:
+                  name: cluster-admin
+                  kind: ClusterRole
+                  apiGroup: rbac.authorization.k8s.io
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRoleBinding
+                metadata:
+                  name: agent-application-controller-cluster-admin
+                subjects:
+                  - name: argocd-argocd-application-controller
+                    namespace: argocd-agent
+                    kind: ServiceAccount
+                roleRef:
+                  name: cluster-admin
+                  kind: ClusterRole
+                  apiGroup: rbac.authorization.k8s.io
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: networking.k8s.io/v1
+                kind: NetworkPolicy
+                metadata:
+                  name: argocd-agent-redis-network-policy
+                  namespace: argocd-agent
+                spec:
+                  ingress:
+                    - from:
+                        - podSelector:
+                            matchLabels:
+                              app.kubernetes.io/name: argocd-agent-agent
+                      ports:
+                        - port: 6379
+                          protocol: TCP
+                  podSelector:
+                    matchLabels:
+                      app.kubernetes.io/name: argocd-redis
+                  policyTypes:
+                    - Ingress
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: argocd-agent-ca
+                  namespace: argocd-agent
+                data:
+                  tls.crt: '{{hub (fromSecret "argocd" "argocd-agent-ca" "tls.crt") hub}}'
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: v1
+                kind: Secret
+                metadata:
+                  name: argocd-agent-client-tls
+                  namespace: argocd-agent
+                type: kubernetes.io/tls
+                data:
+                  tls.crt: '{{hub (fromSecret "argocd" (printf "argocd-agent-%s" (index
+                    .ManagedClusterLabels "argocd-agent")) "tls.crt") hub}}'
+                  ca.crt: '{{hub (fromSecret "argocd" (printf "argocd-agent-%s" (index
+                    .ManagedClusterLabels "argocd-agent")) "ca.crt") hub}}'
+                  tls.key: '{{hub (fromSecret "argocd" (printf "argocd-agent-%s" (index
+                    .ManagedClusterLabels "argocd-agent")) "tls.key") hub}}'
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: argoproj.io/v1alpha1
+                kind: AppProject
+                metadata:
+                  name: cluster-config
+                  namespace: argocd-agent
+                spec:
+                  sourceNamespaces:
+                    - argocd-agent
+                  clusterResourceWhitelist:
+                    - kind: "*"
+                      group: "*"
+                  destinations:
+                    - namespace: "*"
+                      server: "*"
+                  sourceRepos:
+                    - "*"
+              complianceType: mustonlyhave
+            - objectDefinition:
+                apiVersion: argoproj.io/v1alpha1
+                kind: Application
+                metadata:
+                  name: bootstrap-applications
+                  namespace: argocd-agent
+                  labels:
+                    gitops.ownedBy: cluster-config
+                spec:
+                  destination:
+                    namespace: argocd-agent
+                    server: https://kubernetes.default.svc
+                  source:
+                    path: clusters/{{ fromClusterClaim "argocd-agent" }}
+                    repoURL: git@github.com/cvs-health-enterprise-code/cpc-lab
+                    targetRevision: HEAD
+                  project: cluster-config
+                  syncPolicy:
+                    automated:
+                      allowEmpty: false
+                      prune: true
+                      selfHeal: true
+                    retry:
+                      limit: 5
+                      backoff:
+                        duration: 5s
+                        factor: 2
+                        maxDuration: 3m
+                    syncOptions:
+                      - Validate=false
+                      - CreateNamespace=true
+                      - PrunePropagationPolicy=foreground
+                      - PruneLast=true
+                      - RespectIgnoreDifferences=true
+              complianceType: mustonlyhave
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: install-operator
+        spec:
+          severity: critical
+          remediationAction: enforce
+          complianceType: musthave
+          subscription:
+            name: openshift-gitops-operator
+            namespace: openshift-gitops-operator
+            config:
+              env:
+                - name: ARGOCD_CLUSTER_CONFIG_NAMESPACES
+                  value: openshift-gitops, argocd-agent
+                - name: DISABLE_DEFAULT_ARGOCD_INSTANCE
+                  value: "true"
+            channel: gitops-1.19
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+            startingCSV: openshift-gitops-operator.v1.19.1
+          upgradeApproval: Automatic
+          versions:
+            - openshift-gitops-operator.v1.19.1
+  remediationAction: enforce
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: argocd-agent
+  namespace: open-cluster-management-global-set  
+spec:
+  clusterSets:
+    - global
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - key: argocd-agent
+              operator: Exists
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: argocd-agent-placement-binding
+  namespace: open-cluster-management-global-set  
+placementRef:
+  name: argocd-agent
+  kind: Placement
+  apiGroup: cluster.open-cluster-management.io
+subjects:
+  - name: argocd-agent
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io

@@ -1,0 +1,44 @@
+### THIS FILE MUST BE MOVED TO A CLUSTER SPECIFIC PARADIGM. DO NOT INCLUDE IN THE LOCAL KUSTOMIZATION FILE.
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+data:
+  config.yaml: |
+    enableUserWorkload: true
+    nodeExporter:
+      collectors:
+        buddyinfo: {}
+        cpufreq: {}
+        ksmd: {}
+        mountstats: {}
+        netclass: {}
+        netdev: {}
+        processes: {}
+        systemd: {}
+        tcpstat: {}
+    prometheusK8s:
+      additionalAlertmanagerConfigs:
+      - apiVersion: v2
+        bearerToken:
+          key: token
+          name: observability-alertmanager-accessor-4499506ce15943a8bf8
+        scheme: https
+        staticConfigs:
+        - alertmanager-open-cluster-management-observability.apps.hub1.ocp.jobu.net
+        tlsConfig:
+          ca:
+            key: service-ca.crt
+            name: hub-alertmanager-router-ca-4499506ce15943a8bf8
+          insecureSkipVerify: false
+      externalLabels:
+        managed_cluster: 4499506c-e159-43a8-bf84-c61876ce9ead
+        cluster: hub1.ocp.jobu.net
+      remoteWrite:
+          - headers:
+              X-Scope-OrgID: "1"
+            url: https://metrics.jobu.net/api/v1/push
+            writeRelabelConfigs:
+            - regex: "^label_.*"
+              action: "labeldrop"

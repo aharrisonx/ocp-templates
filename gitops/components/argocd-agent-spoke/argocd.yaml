@@ -1,0 +1,198 @@
+apiVersion: argoproj.io/v1beta1
+kind: ArgoCD
+metadata:
+  name: argocd
+  namespace: argocd-agent
+spec:
+  kustomizeBuildOptions: --enable-alpha-plugins --enable-helm --load-restrictor LoadRestrictionsNone
+  controller:
+    resources:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+      requests:
+        cpu: 250m
+        memory: 1Gi
+  redis:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 250m
+        memory: 128Mi
+  repo:
+    resources:
+      limits:
+        cpu: "1"
+        memory: 1Gi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    env:
+      - name: KUSTOMIZE_PLUGIN_HOME
+        value: /etc/kustomize/plugin
+      - name: POLICY_GEN_ENABLE_HELM
+        value: "true"
+    initContainers:
+      - args:
+          - -c
+          - cp /policy-generator/PolicyGenerator-not-fips-compliant /policy-generator-tmp/PolicyGenerator
+        command:
+          - /bin/bash
+        image: registry.redhat.io/rhacm2/multicluster-operators-subscription-rhel9:v2.15
+        name: policy-generator-install
+        volumeMounts:
+          - mountPath: /policy-generator-tmp
+            name: policy-generator
+    sidecarContainers:
+      - name: setenv-plugin
+        command: [/var/run/argocd/argocd-cmp-server]
+        envFrom:
+          - configMapRef:
+              name: environment-variables
+        image: quay.io/raffaelespazzoli/raffa-envsub:1.1
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+          - mountPath: /var/run/argocd
+            name: var-files
+          - mountPath: /home/argocd/cmp-server/plugins
+            name: plugins
+          - mountPath: /tmp
+            name: tmp
+          - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+            subPath: plugin.yaml
+            name: setenv-cmp-plugin
+          - mountPath: /etc/kustomize/plugin/policy.open-cluster-management.io/v1/policygenerator
+            name: policy-generator
+    volumeMounts:
+      - mountPath: /etc/kustomize/plugin/policy.open-cluster-management.io/v1/policygenerator
+        name: policy-generator
+    volumes:
+      - configMap:
+          name: setenv-cmp-plugin
+        name: setenv-cmp-plugin
+      - emptyDir: {}
+        name: policy-generator
+  server:
+    enabled: false
+  resourceTrackingMethod: annotation
+  resourceHealthChecks:
+    - group: operators.coreos.com
+      kind: Subscription
+      check: |
+        health_status = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            numDegraded = 0
+            numPending = 0
+            numSuspended = 0
+            msg = ""
+            for i, condition in pairs(obj.status.conditions) do
+              msg = msg .. i .. ": " .. condition.type .. " | " .. condition.status .. " | " .. condition.reason .. "\n"
+              if condition.type == "InstallPlanPending" and condition.status == "True" then
+                if condition.reason == "RequiresApproval" then
+                  numSuspended = numSuspended + 1
+                else
+                  numPending = numPending + 1
+                end
+              elseif (condition.type == "InstallPlanMissing" and condition.reason ~= "ReferencedInstallPlanNotFound") then
+                numDegraded = numDegraded + 1
+              elseif (condition.type == "CatalogSourcesUnhealthy" or condition.type == "InstallPlanFailed") and condition.status == "True" then
+                numDegraded = numDegraded + 1
+              elseif (condition.type == "ResolutionFailed" and condition.reason ~= "ConstraintsNotSatisfiable") then
+                numDegraded = numDegraded + 1
+              end
+            end
+            if numDegraded > 0 then
+              health_status.status = "Degraded"
+              health_status.message = msg
+              return health_status
+            elseif numSuspended > 0 then
+              health_status.status = "Suspended"
+              health_status.message = "Requires Approval"
+              return health_status
+            elseif numPending > 0 then
+              health_status.status = "Progressing"
+              health_status.message = "An install plan for a subscription is pending installation"
+              return health_status
+            else
+              health_status.status = "Healthy"
+              health_status.message = msg
+              return health_status
+            end
+          end
+        end
+        health_status.status = "Progressing"
+        health_status.message = "An install plan for a subscription is pending installation"
+        return health_status
+    - group: operators.coreos.com
+      kind: InstallPlan
+      check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.phase ~= nil then
+            if obj.status.phase == "Complete" then
+              hs.status = "Healthy"
+              hs.message = obj.status.phase
+              return hs
+            elseif obj.status.phase == "RequiresApproval" then
+              hs.status = "Suspended"
+              hs.message = obj.status.phase
+              return hs
+            else
+              hs.status = "Progressing"
+              hs.message = obj.status.phase
+              return hs
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for InstallPlan to complete"
+  resourceExclusions: |
+    - apiGroups:
+      - tekton.dev
+      clusters:
+      - '*'
+      kinds:
+      - TaskRun
+      - PipelineRun
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: setenv-cmp-plugin
+  namespace: argocd-agent
+data:
+  plugin.yaml: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: setenv-cmp-plugin
+    spec:
+      version: v1.0
+      init:
+        command: [sh, -c, 'echo "Initializing setenv-plugin-cmp..."']
+      generate:
+        command:
+          - sh
+          - "-c"
+          - "set -o pipefail && kustomize build --load-restrictor LoadRestrictionsNone --enable-helm --enable-alpha-plugins . | envsub"
+      discover:
+        find:
+          command: [sh, -c, 'find . -maxdepth 1 -name kustomization.yaml']
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: environment-variables
+  namespace: argocd-agent
+data:
+  KUSTOMIZE_PLUGIN_HOME: /etc/kustomize/plugin
+  CLUSTER_NAME: {{ fromClusterClaim "argocd-agent" }}
+  CLUSTER_BASE_DOMAIN: {{ printf "%s.ocp.jobu.net" (fromClusterClaim "argocd-agent") }}
+          # all created clusters base domain should be <cluster-name>.<PLATFORM_BASE_DOMAIN> 
+  PLATFORM_BASE_DOMAIN: 'ocp.jobu.net'
+  INFRA_GITOPS_REPO: 'https://github.com/cvs-health-enterprise-code/cpc-lab.git'

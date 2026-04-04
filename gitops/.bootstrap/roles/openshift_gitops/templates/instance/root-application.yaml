@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root-application
+  namespace: "{{ gitops_instance_namespace }}"
+spec:
+  project: "{{ gitops_app_project }}"
+  source:
+    repoURL: "{{ git_src }}"
+    path: clusters/{{ ocp_preferred_cluster_name }}
+  destination:
+    server: "https://kubernetes.default.svc"

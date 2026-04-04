@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - nncp-worker-node-vlan220.yaml
+  - nncp-worker-node-vlan221.yaml
+  - nncp-worker-node-vlan222.yaml
+  - nncp-worker-node-vlan223.yaml

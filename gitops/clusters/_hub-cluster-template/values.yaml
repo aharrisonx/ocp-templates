@@ -1,0 +1,181 @@
+applications: 
+  
+  web-terminal-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: web-terminal-operator
+    source:
+      path: clusters/_hub-cluster-template/overlays/web-terminal-operator
+        
+  node-labels:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    source:
+      path: clusters/hub1/overlays/node-labels
+    syncOptions:
+      - ServerSideApply=true
+  
+  local-storage-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-local-storage
+    source:
+      path: clusters/_hub-cluster-template/overlays/local-storage-operator
+  
+  odf-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-storage
+    source:
+      path: clusters/_hub-cluster-template/overlays/odf-operator
+  
+  external-secrets-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: external-secrets-operator
+    source:
+      path: clusters/_hub-cluster-template/overlays/external-secrets-operator
+  
+  external-secrets-configuration:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: external-secrets-operator
+    source:
+      path: clusters/_hub-cluster-template/overlays/external-secrets-configuration
+  
+  cert-manager-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: cert-manager
+    source:
+      path: clusters/_hub-cluster-template/overlays/cert-manager-operator
+   
+  aap-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: aap
+    source:
+      path: clusters/_hub-cluster-template/overlays/aap-operator
+  
+  acm-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: open-cluster-management
+    source:
+      path: clusters/_hub-cluster-template/overlays/acm-operator
+  
+  compliance-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-compliance
+    source:
+      path: clusters/_hub-cluster-template/overlays/compliance-operator
+  
+  descheduler-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-kube-descheduler-operator 
+    source:
+      path: clusters/_hub-cluster-template/overlays/descheduler-operator
+                          
+  mtv-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-mtv
+    source:
+      path: clusters/_hub-cluster-template/overlays/mtv-operator
+  
+  nmstate-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-nmstate
+    source:
+      path: clusters/_hub-cluster-template/overlays/nmstate-operator
+  
+  node-feature-discovery-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-nfd
+    source:
+      path: clusters/_hub-cluster-template/overlays/node-feature-discovery-operator
+  
+  node-fence-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-workload-availability
+    source:
+      path: clusters/_hub-cluster-template/overlays/node-fence-operator
+  
+  node-fence-config:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '15'
+    destination:
+      namespace: openshift-workload-availability
+    source:
+      path: clusters/_hub-cluster-template/overlays/node-fence-config
+  
+  node-health-check-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-workload-availability
+    source:
+      path: clusters/_hub-cluster-template/overlays/node-health-check-operator
+  
+  node-maintenance-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-workload-availability
+    source:
+      path: clusters/_hub-cluster-template/overlays/node-maintenance-operator
+
+  osv-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-cnv
+    source:
+      path: clusters/_hub-cluster-template/overlays/osv-operator
+  
+  redhat-otel-operator:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '10'
+    destination:
+      namespace: openshift-opentelemetry-operator
+    source:
+      path: clusters/_hub-cluster-template/overlays/redhat-otel-operator

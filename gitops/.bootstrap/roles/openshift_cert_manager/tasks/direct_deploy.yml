@@ -1,0 +1,38 @@
+- name: Deploy cert manager operator
+  kubernetes.core.k8s:
+    template:
+      - operator/namespace.yaml
+      - operator/operatorgroup.yaml
+      - operator/subscription.yaml
+
+- import_role:
+    name: openshift_common
+    tasks_from: install_plan_approve_subtasks.yml
+  vars:
+    subscription_name: openshift-cert-manager-operator
+    subscription_namespace: '{{ certman_operator_namespace }}'
+  when: certman_operator_subscription_approval == 'Manual'
+  tags: osvirt_operator
+
+- import_role:
+    name: openshift_common
+    tasks_from: wait_for_operator.yml
+  vars:
+    subscription_name: openshift-cert-manager-operator
+    subscription_namespace: '{{ certman_operator_namespace }}'
+  tags: osvirt_operator
+
+- name: Deploy cert manager instance
+  kubernetes.core.k8s:
+    template:
+      - instance/namespace.yaml
+      - instance/certmanager.yaml
+      - instance/servicemonitor.yaml
+
+- import_role:
+    name: openshift_common
+    tasks_from: wait_for_deployment.yml
+  vars:
+    wait_for_deployment_name: cert-manager-webhook
+    wait_for_deployment_namespace: '{{ certman_instance_namespace }}'
+    wait_for_deployment_retries: 60

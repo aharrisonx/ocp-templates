@@ -1,0 +1,63 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: operator-name-policy # Name the Policy the same as the operator or element name with '-policy' appended (ex. argocd-agent-policy)
+  namespace: open-cluster-management-global-set  
+spec:
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1beta1
+        kind: OperatorPolicy
+        metadata:
+          name: install-operator-name # Name the OperatorPolicy the same as the operator or element name with 'install-' prepended (ex. install-argocd-agent)
+        spec:
+          complianceType: musthave
+          remediationAction: enforce
+          severity: critical
+          subscription:
+            channel: gitops-1.20 # Operator channels vary in name. Some are name & version scoped, some are 'stable' or 'latest'
+            name: openshift-gitops-operator # Exact catalog name (can be different than display name) for the operator
+            namespace: openshift-gitops-operator # Namespace where the operator will be installed
+            source: redhat-operators # Operator source.  Will always be redhat-operators for Red Hat Certified Operators
+            sourceNamespace: openshift-marketplace # Operator source Namespace. Will always be openshift-marketplace for Catalog Operators
+            # config:                  This section will not be necessary in most operators, but is included here as an example
+            #   env:                   of how to pass config options as environment variables to the operator.
+            #   - name: VARIABLE_FOO   See components/acm-argocd-agent/argocd-agent.yaml for a live example.
+            #     value: 'foo'
+            #   - name: VARIABLE_BAR
+            #     value: 'bar'
+          upgradeApproval: Automatic
+          versions:
+            - openshift-gitops-operator.v1.20.1
+            - openshift-gitops-operator.v1.20.0  # List of allowed versions. Must include at least one available version from the channel above
+  remediationAction: enforce
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: operator-name-placement # Name the placement the same as the operator or element being placed (ex. argocd-agent-placement)
+  namespace: open-cluster-management-global-set  
+spec:
+  clusterSets:
+    - global  # If you just define spec: clusterSets: global, the policy will apply to all clusters.  
+  predicates: # Use labelSelectors in the predicate section for more fine-grain control of cluster placement.
+    - requiredClusterSelector:
+        labelSelector:
+          matchExpressions:
+            - key: operator-name # custom cluster label that matches the operator or element name (ex. argocd-agent)
+              operator: Exists
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: operator-name-placement-binding # Name the placementBinding the same as the operator or element (ex. argocd-agent-placement-binding)
+  namespace: open-cluster-management-global-set  
+placementRef:
+  name: operator-name-placement # The Placement name defined above (ex. argocd-agent-placement)
+  kind: Placement
+  apiGroup: cluster.open-cluster-management.io
+subjects:
+  - name: operator-name-policy # The Policy name defined above (ex. argocd-agent-policy)
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
