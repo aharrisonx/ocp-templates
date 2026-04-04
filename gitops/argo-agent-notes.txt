@@ -1,0 +1,41 @@
+Folders Needed:
+acm-policies
+openshift-gitops
+openshift-gitops-operator
+
+ArgoCD Instance:
+apps\openshift-gitops\base\argocd.yaml
+-Cleanup components (e.g. remove Keycloak)
+
+apps\openshift-gitops-operator\base\subscription.yaml
+-Remove server role/cluster role, rely on cluster-admin (- name: CONTROLLER_CLUSTER_ROLE value: gitops-controller
+-Do NOT disable default instance
+
+Initial Testing CA:
+components\argocd-agent\manifests\base\argocd-agent-ca.yaml
+https://argocd-agent.readthedocs.io/latest/configuration/tls-certificates/#step-1-create-the-ca
+
+To use cert-manager issuer:
+Update apps\acm-policies\base\argocd-agent-registration\manifests\argocd-agent-register.yaml
+
+Find/replace ocplab.com with clusterbase
+
+grep cluster-admin, look for where role is being assigned to sa
+
+apps\openshift-gitops\overlays\argocd-agent\values.yaml
+agentMode: "managed" (autonmous)
+
+server: "argocd-agent-principal-argocd.apps.hub.ocplab.com"
+
+Comment out custom image for agent
+image:
+  repository: quay.io/gnunn/argocd-agent
+  tag: latest
+
+
+apps\openshift-gitops\components\agent-principal\kustomization.yaml
+ Update custom image
+            image: quay.io/gnunn/argocd-agent:latest
+
+Node Labels:
+argocd-agent-control-plane
