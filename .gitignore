@@ -1,1 +1,7 @@
 htpassfile
+aws/hub/machinesets/aws-metal-worker-machineset-us-east-2a.yaml
+aws/hub/machinesets/aws-metal-worker-machineset-us-east-2b.yaml
+aws/hub/machinesets/aws-metal-worker-machineset-us-east-2c.yaml
+aws/hub/machinesets/aws-worker-machineset-us-east-2a.yaml
+aws/hub/machinesets/aws-worker-machineset-us-east-2b.yaml
+aws/hub/machinesets/aws-worker-machineset-us-east-2c.yaml
