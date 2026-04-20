@@ -13,7 +13,7 @@ default:
       namespace: argocd
       server: https://kubernetes.default.svc
     source:
-      repoURL: https://github.com/cvs-health-enterprise-code/cpc-lab
+      repoURL: https://github.com/aharrisonx/ocp-osv-acm-argo-iac.git
       targetRevision: HEAD
     syncOptions:
     - ApplyOutOfSyncOnly=true

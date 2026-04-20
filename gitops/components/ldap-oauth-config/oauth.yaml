@@ -4,7 +4,7 @@ metadata:
   name: cluster
 spec:
   identityProviders:
-  - name: cvs-ldap
+  - name: opentlc-ldap
     mappingMethod: claim
     type: LDAP
     ldap:
@@ -20,6 +20,6 @@ spec:
       bindPassword:
         name: ldap-password
       # ca:
-      #   name: jobu-net-ca-config-map
+      #   name: opentlc-ca-config-map
       insecure: false
       url: ""

@@ -4,9 +4,6 @@ kind: Kustomization
 namespace: argocd-agent
 
 resources:
-#- github.com/gnunn-gitops/cluster-config-v2/apps/openshift-gitops/overlays/argocd-agent
-#- components/openshift-gitops/overlays/argocd-agent
-#- github.com/cvs-health-enterprise-code/cpc-lab/components/openshift-gitops/overlays/argocd-agent
 - ../../../argocd-agent
 - environment-variables.yaml
 - appproject.yaml

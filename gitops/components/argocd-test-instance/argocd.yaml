@@ -410,4 +410,4 @@ data:
   CLUSTER_BASE_DOMAIN: '${cluster_base_domain}'
           # all created clusters base domain should be <cluster-name>.<PLATFORM_BASE_DOMAIN> 
   PLATFORM_BASE_DOMAIN: '${platform_base_domain}'
-  INFRA_GITOPS_REPO: git@github.com:cvs-health-enterprise-code/cpc-lab.git        
+  INFRA_GITOPS_REPO: git@github.com:aharrisonx/ocp-osv-acm-argo-iac.git        

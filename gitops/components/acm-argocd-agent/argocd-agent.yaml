@@ -76,7 +76,7 @@ spec:
                 data:
                   CLUSTER_BASE_DOMAIN: hub1.ocp.jobu.net
                   CLUSTER_NAME: hub1
-                  INFRA_GITOPS_REPO: https://github.com/cvs-health-enterprise-code/cpc-lab.git
+                  INFRA_GITOPS_REPO: https://github.com/aharrisonx/ocp-osv-acm-argo-iac.git.git
                   KUSTOMIZE_PLUGIN_HOME: /etc/kustomize/plugin
                   PLATFORM_BASE_DOMAIN: ocp.jobu.net
               complianceType: mustonlyhave
@@ -764,7 +764,7 @@ spec:
                     server: https://kubernetes.default.svc
                   source:
                     path: clusters/{{ fromClusterClaim "argocd-agent" }}
-                    repoURL: git@github.com/cvs-health-enterprise-code/cpc-lab
+                    repoURL: git@github.com:aharrisonx/ocp-osv-acm-argo-iac
                     targetRevision: HEAD
                   project: cluster-config
                   syncPolicy:

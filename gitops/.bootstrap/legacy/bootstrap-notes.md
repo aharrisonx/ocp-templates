@@ -7,7 +7,7 @@
 
 ```shell
 # Set env variables
-export gitops_repo=git@github.com/cvs-health-enterprise-code/cpc-lab.git
+export gitops_repo=git@github.com:aharrisonx/ocp-osv-acm-argo-iac.git
 export cluster_name=hub1
 export cluster_base_domain=$(oc get ingress.config.openshift.io cluster --template={{.spec.domain}} | sed -e "s/^apps.//")
 export platform_base_domain=${cluster_base_domain#*.}

@@ -20,7 +20,7 @@ spec:
 
   # Source of the application manifests
   source:
-    repoURL: git@github.com:cvs-health-enterprise-code/cpc-lab.git  # Can point to either a Helm chart repo or a git repo.
+    repoURL: git@github.com:aharrisonx/ocp-osv-acm-argo-iac.git  # Can point to either a Helm chart repo or a git repo.
     targetRevision: HEAD  # For Helm, this refers to the chart version.
     path: clusters/hub1-test  # This has no meaning for Helm charts pulled directly from a Helm repo instead of git.
 
