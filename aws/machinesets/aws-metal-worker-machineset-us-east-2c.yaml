@@ -1,7 +1,7 @@
 apiVersion: machine.openshift.io/v1beta1
 kind: MachineSet
 metadata:
-  annotations:
+  annotations: {}
   name: $CLUSTERID-metal-worker-us-east-2c
   namespace: openshift-machine-api
   labels:
