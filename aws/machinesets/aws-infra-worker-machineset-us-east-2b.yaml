@@ -1,1 +1,71 @@
-
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  annotations: {}
+  name: $CLUSTERID-infra-worker-us-east-2b
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: $CLUSTERID
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: $CLUSTERID
+      machine.openshift.io/cluster-api-machineset: $CLUSTERID-infra-worker-us-east-2b
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: $CLUSTERID
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: $CLUSTERID-infra-worker-us-east-2b
+        node-role.kubernetes.io/worker: ""
+        node-role.kubernetes.io/infra: ""
+    spec:
+      lifecycleHooks: {}
+      metadata: {}
+      providerSpec:
+        value:
+          userDataSecret:
+            name: worker-user-data
+          placement:
+            availabilityZone: us-east-2b
+            region: us-east-2
+          credentialsSecret:
+            name: aws-cloud-credentials
+          instanceType: m5a.4xlarge
+          metadata:
+            creationTimestamp: null
+          blockDevices:
+            - ebs:
+                encrypted: true
+                iops: 0
+                kmsKey:
+                  arn: ''
+                volumeSize: 400
+                volumeType: gp3
+          securityGroups:
+            - filters:
+                - name: 'tag:Name'
+                  values:
+                    - $CLUSTERID-node
+            - filters:
+                - name: 'tag:Name'
+                  values:
+                    - $CLUSTERID-lb                    
+          kind: AWSMachineProviderConfig
+          metadataServiceOptions: {}
+          tags:
+            - name: kubernetes.io/cluster/$CLUSTERID
+              value: owned
+          deviceIndex: 0
+          ami:
+            id: $AMI_ID
+          subnet:
+            filters:
+              - name: 'tag:Name'
+                values:
+                  - $CLUSTERID-subnet-private-us-east-2b
+          apiVersion: machine.openshift.io/v1beta1
+          iamInstanceProfile:
+            id: $CLUSTERID-worker-profile
