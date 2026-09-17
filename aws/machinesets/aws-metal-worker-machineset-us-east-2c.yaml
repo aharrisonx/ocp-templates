@@ -31,7 +31,7 @@ spec:
             region: us-east-2
           credentialsSecret:
             name: aws-cloud-credentials
-          instanceType: c6id.metal
+          instanceType: m5d.metal
           metadata:
             creationTimestamp: null
           blockDevices:
