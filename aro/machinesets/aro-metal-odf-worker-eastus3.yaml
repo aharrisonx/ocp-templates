@@ -1,1 +1,72 @@
-
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  annotations: {}
+  name: $CLUSTERID-metal-odf-worker-eastus3
+  generation: 1
+  namespace: openshift-machine-api
+  labels:
+    machine.openshift.io/cluster-api-cluster: $CLUSTERID
+    machine.openshift.io/cluster-api-machine-role: worker
+    machine.openshift.io/cluster-api-machine-type: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: $CLUSTERID
+      machine.openshift.io/cluster-api-machineset: $CLUSTERID-metal-odf-worker-eastus3
+  template:
+    metadata:
+      labels:
+        machine.openshift.io/cluster-api-cluster: $CLUSTERID
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: $CLUSTERID-metal-odf-worker-eastus3
+        node-role.kubernetes.io/worker: ""
+        node-role.kubernetes.io/infra: ""
+        node-role.kubernetes.io/storage: ""
+        cluster.ocs.openshift.io/openshift-storage: ""
+    spec:
+      lifecycleHooks: {}
+      metadata: {}
+      providerSpec:
+        value:
+          osDisk:
+            diskSettings: {}
+            diskSizeGB: 400
+            managedDisk:
+              securityProfile:
+                diskEncryptionSet: {}
+              storageAccountType: Premium_LRS
+            osType: Linux
+          networkResourceGroup: openenv-$GUID
+          publicLoadBalancer: $CLUSTERID
+          userDataSecret:
+            name: worker-user-data
+          vnet: aro-vnet-$GUID
+          securityProfile:
+            settings: {}
+          credentialsSecret:
+            name: azure-cloud-credentials
+            namespace: openshift-machine-api
+          diagnostics:
+            boot:
+              storageAccountType: AzureManaged
+          zone: '3'
+          metadata:
+            creationTimestamp: null
+          publicIP: false
+          resourceGroup: $RESOURCEGROUP
+          kind: AzureMachineProviderSpec
+          location: eastus
+          vmSize: Standard_D16as_v5
+          image:
+            offer: aro4
+            publisher: azureopenshift
+            resourceID: ''
+            sku: 420-v2
+            type: MarketplaceNoPlan
+            version: 9.6.20251015
+          acceleratedNetworking: true
+          subnet: worker-subnet
+          apiVersion: machine.openshift.io/v1beta1
