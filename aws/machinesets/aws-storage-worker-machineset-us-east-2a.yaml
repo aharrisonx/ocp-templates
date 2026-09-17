@@ -1,10 +1,7 @@
 apiVersion: machine.openshift.io/v1beta1
 kind: MachineSet
 metadata:
-  annotations:
-    machine.openshift.io/GPU: '0'
-    machine.openshift.io/memoryMb: '65536'
-    machine.openshift.io/vCPU: '16'
+  annotations: {}
   name: $CLUSTERID-storage-worker-us-east-2a
   namespace: openshift-machine-api
   labels:
@@ -47,8 +44,8 @@ spec:
                 iops: 0
                 kmsKey:
                   arn: ''
-                volumeSize: 120
-                volumeType: io2
+                volumeSize: 400
+                volumeType: gp3
           securityGroups:
             - filters:
                 - name: 'tag:Name'
