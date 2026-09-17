@@ -7,7 +7,7 @@ metadata:
   labels:
     machine.openshift.io/cluster-api-cluster: $CLUSTERID
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       machine.openshift.io/cluster-api-cluster: $CLUSTERID
@@ -31,7 +31,7 @@ spec:
             region: us-east-2
           credentialsSecret:
             name: aws-cloud-credentials
-          instanceType: m5n.metal
+          instanceType: c6id.metal
           metadata:
             creationTimestamp: null
           blockDevices:
@@ -40,8 +40,8 @@ spec:
                 iops: 0
                 kmsKey:
                   arn: ''
-                volumeSize: 300
-                volumeType: gp3
+                volumeSize: 400
+                volumeType: io2
           securityGroups:
             - filters:
                 - name: 'tag:Name'
