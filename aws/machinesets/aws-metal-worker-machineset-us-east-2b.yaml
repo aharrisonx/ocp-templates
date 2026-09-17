@@ -1,7 +1,7 @@
 apiVersion: machine.openshift.io/v1beta1
 kind: MachineSet
 metadata:
-  annotations:
+  annotations: {}
   name: $CLUSTERID-metal-worker-us-east-2b
   namespace: openshift-machine-api
   labels:
@@ -31,7 +31,7 @@ spec:
             region: us-east-2
           credentialsSecret:
             name: aws-cloud-credentials
-          instanceType: c6id.metal
+          instanceType: m5d.metal
           metadata:
             creationTimestamp: null
           blockDevices:
