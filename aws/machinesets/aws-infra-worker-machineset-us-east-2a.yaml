@@ -19,11 +19,12 @@ spec:
         machine.openshift.io/cluster-api-machine-role: worker
         machine.openshift.io/cluster-api-machine-type: worker
         machine.openshift.io/cluster-api-machineset: $CLUSTERID-infra-worker-us-east-2a
-        node-role.kubernetes.io/worker: ""
-        node-role.kubernetes.io/infra: ""
     spec:
       lifecycleHooks: {}
-      metadata: {}
+      metadata:
+        labels:
+          node-role.kubernetes.io/worker: ""
+          node-role.kubernetes.io/infra: ""
       providerSpec:
         value:
           userDataSecret:
