@@ -23,7 +23,10 @@ spec:
         node-role.kubernetes.io/infra: ""
     spec:
       lifecycleHooks: {}
-      metadata: {}
+      metadata: 
+        labels:
+          node-role.kubernetes.io/worker: ""
+          node-role.kubernetes.io/infra: ""
       providerSpec:
         value:
           userDataSecret:
