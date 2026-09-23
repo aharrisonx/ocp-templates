@@ -22,10 +22,6 @@ spec:
         machine.openshift.io/cluster-api-machine-role: worker
         machine.openshift.io/cluster-api-machine-type: worker
         machine.openshift.io/cluster-api-machineset: $CLUSTERID-metal-odf-worker-eastus1
-        node-role.kubernetes.io/worker: ""
-        node-role.kubernetes.io/infra: ""
-        node-role.kubernetes.io/storage: ""
-        cluster.ocs.openshift.io/openshift-storage: ""
     spec:
       lifecycleHooks: {}
       metadata: 
@@ -38,7 +34,7 @@ spec:
         value:
           osDisk:
             diskSettings: {}
-            diskSizeGB: 400
+            diskSizeGB: 512
             managedDisk:
               securityProfile:
                 diskEncryptionSet: {}
