@@ -2,7 +2,7 @@
 
 ## A collection of tools to make using OpenShift 4.x easier
 
-## htpassfile
+## htpassfile.example
 Add or update users and passwords to this file prior to setting up HTPasswd oauth on the cluster.  The command to add a new user to the existing file or update the password of an existing user in the file is `htpasswd -b htpassfile username password`. You can validate the passwords in the file with the command `htpasswd -v htpassfile username`. You will be prompted for the password and returned with either 
 `Password verification failed`
 or
